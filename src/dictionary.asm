@@ -9,7 +9,7 @@
 ;   - address next entry (word)
 ;   - # words (byte)
 ;   - flags (byte)
-;   - name address 
+;   - name address
 ;   - Code Address (for code words) or List of XT (colon definition)
 ;
 ;   Flags:
@@ -20,7 +20,7 @@
 xt_if:      dw  0           ; IF runtime execution token.
 xt_jz:      dw  0           ; Jump if zero
 xt_jp:      dw  0           ; Jump
-xt_do:      dw  0           ; DO 
+xt_do:      dw  0           ; DO
 xt_does:    dw  0           ; DOES
 xt_loop:    dw  0           ; LOOP
 xt_plus_loop: dw 0          ; +LOOP
@@ -37,17 +37,17 @@ code_create:
 ;   Implements CREATE
 ;   ( "<spaces>name" -- )
 ;
-;   Skip leading space delimiters. Parse name delimited by a space. 
-;   Create a definition for name with the execution semantics defined below. 
-;   If the data-space pointer is not aligned, reserve enough data space to align it. 
-;   The new data-space pointer defines name's data field. 
+;   Skip leading space delimiters. Parse name delimited by a space.
+;   Create a definition for name with the execution semantics defined below.
+;   If the data-space pointer is not aligned, reserve enough data space to align it.
+;   The new data-space pointer defines name's data field.
 ;   CREATE does not allocate data space in name's data field.
 ;
 ;   name Execution:
 ;   ( -- a-addr )
 ;
-;   a-addr is the address of name's data field. 
-;   The execution semantics of name may be extended by using DOES>. 
+;   a-addr is the address of name's data field.
+;   The execution semantics of name may be extended by using DOES>.
 ;
 ;   Set Z flag to FALSE if word can't be created, TRUE otherwise
 ;
@@ -59,13 +59,13 @@ code_create:
     push hl
     fcall code_word
     pop hl                  ; origin
-            
+
     ;   Check word len
     ld  a, (hl)             ; len
     cp  0
     jz  _code_create_error
 
-    ld      de, (_DP)  
+    ld      de, (_DP)
     push    de         ; destination   ( -- name_addr )
     ;   Calculate total len and save it onto the stack
     ld   d, 0
@@ -75,7 +75,7 @@ code_create:
 
     ;   Prepare moving the name
     push hl         ; origin        ( -- name_addr len origin)
-    ld   hl, (_DP)  
+    ld   hl, (_DP)
     push hl         ; destination   ( -- name_addr len origin dest )
     push de         ; length        ( -- name_addr len origin dest len )
 
@@ -90,10 +90,10 @@ code_create:
     push    de          ; ( -- name_addr code_addr )
     fcall   code_swap   ; ( -- code_addr name_addr )
     fcall   dict_add
-    
+
     ld      hl, (xt_address)
     push    hl
-    fcall   code_comma    ; 
+    fcall   code_comma    ;
 
     ;   Make it a colon definition
 
@@ -107,7 +107,7 @@ code_create:
     ld  a, (hl)
     or  BIT_COLON
     ld  (hl), a
-    
+
     sub a
     inc a   ; Set Z flag = 0
 
@@ -133,18 +133,18 @@ code_does:
 ;   Compilation:
 ;   ( C: colon-sys1 -- colon-sys2 )
 ;
-;   Append the run-time semantics below to the current definition. 
-;   Whether or not the current definition is rendered findable in the 
-;   dictionary by the compilation of DOES> is implementation defined. 
-;   Consume colon-sys1 and produce colon-sys2. 
+;   Append the run-time semantics below to the current definition.
+;   Whether or not the current definition is rendered findable in the
+;   dictionary by the compilation of DOES> is implementation defined.
+;   Consume colon-sys1 and produce colon-sys2.
 ;   Append the initiation semantics given below to the current definition.
 ;
 ;   Run-time:
 ;   ( -- ) ( R: nest-sys1 -- )
 ;
 ;   Replace the execution semantics of the most recent definition, referred to as name,
-;   with the name execution semantics given below. Return control to the calling 
-;   definition specified by nest-sys1. 
+;   with the name execution semantics given below. Return control to the calling
+;   definition specified by nest-sys1.
 ;   An ambiguous condition exists if name was not defined with CREATE or a user-defined
 ;   word that calls CREATE.
 ;
@@ -152,16 +152,16 @@ code_does:
 ;   ( i * x -- i * x a-addr ) ( R: -- nest-sys2 )
 :
 ;   Save implementation-dependent information nest-sys2 about the calling definition.
-;   Place name's data field address on the stack. 
+;   Place name's data field address on the stack.
 ;   The stack effects i * x represent arguments to name.
 ;
 ;   name Execution:
 ;   ( i * x -- j * x )
 ;
 ;   Execute the portion of the definition that begins with the initiation semantics
-;   appended by the DOES> which modified name. The stack effects i * x and j * x 
-;   represent arguments to and results from name, respectively. 
- 
+;   appended by the DOES> which modified name. The stack effects i * x and j * x
+;   represent arguments to and results from name, respectively.
+
     fenter
 
     ;
@@ -170,16 +170,16 @@ code_does:
     ;
 
     ld  hl, (_DICT)
-    inc hl  
+    inc hl
     inc hl  ; # words
     inc hl  ; flags
     inc hl  ; name
-    inc hl  
+    inc hl
     inc hl  ; code
-   
+
     ld  de, (xt_does)   ; Reeplace old code with DOES>
     ld  (hl), de
-    
+
     inc hl
     inc hl
     ld  de, hl
@@ -189,8 +189,8 @@ code_does:
     ld  (hl), de        ; Save address where does> start
     ld hl, _EXIT        ; Terminate word execution
     ex_push
-                   
-    fret       
+
+    fret
 
 _does_exec:
 
@@ -207,7 +207,7 @@ _does_exec:
 
     ld  hl, de
     ex_push
-    ;       
+    ;
     fret
 
 code_immediate:
@@ -215,9 +215,9 @@ code_immediate:
 ;   Implements IMMEDIATE
 ;   ( -- )
 ;
-;   Make the most recent definition an immediate word. 
-;   An ambiguous condition exists if the most recent definition 
-;   does not have a name or if it was defined as a SYNONYM. 
+;   Make the most recent definition an immediate word.
+;   An ambiguous condition exists if the most recent definition
+;   does not have a name or if it was defined as a SYNONYM.
 ;
     fenter
 
@@ -236,7 +236,7 @@ code_immediate:
 
 dict_add:
     ;
-    ;   Add a new Forth word 
+    ;   Add a new Forth word
     ;   ( c-addr addr -- )
     ;
     ;   Create new dictionary entry with name c-addr and code addr
@@ -250,7 +250,7 @@ dict_add:
     ;   Copy (_DICT) to (_DP)
     ld  de, (_DICT) ; de = last entry address
     ld  hl, (_DP)   ; hl = next free byte address
-    ld  (_DICT), hl ; _DICT -> new entry   
+    ld  (_DICT), hl ; _DICT -> new entry
 
     ;   Pointer to next entry
     ld_hl_de
@@ -258,7 +258,7 @@ dict_add:
     ;   # words
     ld  (hl), 1
     inc hl
-    
+
     ;   Flags
     ld  (hl), 0
     inc hl
@@ -318,7 +318,7 @@ dict_search:
     fenter
 
     ld  hl, (_DICT) ; First entry
-    ;   
+    ;
     ;   In compilation mode, don't look at the first entry,
     ;   which is under construction and not yet valid.
     ;   (This way you can extend a previous word)
@@ -348,10 +348,10 @@ _dict_search_cycle:
     fcall code_count    ; ( addr addr -- addr c-addr u )
 
     ld   hl, (_dict_ptr)
-    inc  hl      
+    inc  hl
     inc  hl      ; # words
     inc  hl      ; hl -> flags
-    inc  hl      ; hl -> name address    
+    inc  hl      ; hl -> name address
     ld   bc, (hl)
     push bc
     fcall code_count        ; ( -- addr c-addr1 u1 c-addr2 u2 )
@@ -361,17 +361,17 @@ _dict_search_cycle:
 
     ;   Not found here, try next
     ld  hl, (_dict_ptr)     ; ptr -> entry
-    ld  c, (hl)     
+    ld  c, (hl)
     inc hl
     ld  b, (hl)             ; bc -> next_entry
 
     ld hl, bc
-    ld (_dict_ptr), hl  
+    ld (_dict_ptr), hl
 
     jr  _dict_search_cycle
 
-_dict_search_not_found:   
-    
+_dict_search_not_found:
+
     ld      hl, FALSE
     jr      _dict_search_end
 
@@ -384,7 +384,7 @@ _dict_search_not_found:
 
     pop hl      ; Flag
     ld  a, l
-    or  h       ; Failed? 
+    or  h       ; Failed?
     jr  nz, _dict_search_xt_value
 
     ld  hl, FALSE
@@ -417,7 +417,7 @@ _dict_search_xt_compile:
     ;   the caller expect a XT, so we return an
     ;   immediate NOP that not change anything.
 
-    ld  hl, (xt_noop)   
+    ld  hl, (xt_noop)
     jr  _dict_search_end2
 
 _dict_search_found:
@@ -426,7 +426,7 @@ _dict_search_end:
     pop  bc     ; Discard word address
 _dict_search_end2:
     push hl     ; Push entry address | flag
-    
+
     fret
 
 _dict_ptr:   dw 0
@@ -456,7 +456,7 @@ code_literal:
 ;   Run-time:
 ;   ( -- x )
 ;
-;    Place x on the stack.   
+;    Place x on the stack.
 ;
     fenter
 
@@ -474,13 +474,13 @@ code_literal:
     ld  (hl), d
     inc hl
 
-    ;   Now append the value 
+    ;   Now append the value
     pop de
     ld  (hl), e
     inc hl
     ld  (hl), d
     inc hl
-    
+
     ;   Update DP
     ld  (_DP), hl
 
@@ -493,11 +493,11 @@ code_literal_runtime:
     ;   In interpreter mode, execution stack have the next execution token address
     ;   in the current word. It's used by code_execute to keep trace of what
     ;   word is executing.
-    ;   
+    ;
     ex_pop
-    
+
     ;   Get the value
-    ld      c, (hl)    
+    ld      c, (hl)
     inc     hl
     ld      b, (hl)
     inc     hl          ; HL -> next xt
@@ -509,7 +509,7 @@ code_literal_runtime:
     ex_push
 
     fret
-    
+
 _code_literal_error:
     ;
     ld  hl, err_mode_not_comp
@@ -531,7 +531,7 @@ code_postpone:
 ;   Compilation:
 ;   ( "<spaces>name" -- )
 ;
-;   Skip leading space delimiters. Parse name delimited by a space. Find name. 
+;   Skip leading space delimiters. Parse name delimited by a space. Find name.
 ;   Append the compilation semantics of name to the current definition.
 ;   An ambiguous condition exists if name is not found.
 ;
@@ -545,8 +545,8 @@ code_postpone:
     push    hl
     fcall   code_word   ; ( ' ' -- c-addr )
     fcall   dict_search ; ( c-addr -- xt )
-    
-    ;   
+
+    ;
     pop     hl
     push    hl
     ld      a, h
@@ -575,20 +575,20 @@ _code_postpone_next:
     fret
 
 _code_postpone_save:
-    
+
     ;   Store xt as a literal (non immediate word)
-    
+
     fcall   code_literal
 
     ld      hl, (xt_comma)
     push    hl
     fcall   code_comma    ; ( xt -- )
 
-    fret    
-    
+    fret
+
 _code_postpone_runtime:
     ;
-    ;   Take the XT from the next cell and 
+    ;   Take the XT from the next cell and
     ;   call execute
     ;
     fenter
@@ -615,8 +615,8 @@ _code_postpone_runtime:
     ld (_postpone_jp + 1), bc   ; HL was filled by _ex_classify
     ld hl, _code_postpone_end
 
-_postpone_jp:    
-    jp   0          ; dest. will be overwritten 
+_postpone_jp:
+    jp   0          ; dest. will be overwritten
 
 
 _code_postpone_execute:
@@ -624,26 +624,26 @@ _code_postpone_execute:
     fcall   code_execute
 
 _code_postpone_end:
-    
+
     fret
-    
+
 _code_postpone_error:
 
     jp  _code_mode_error
 
 code_comma:
 ;
-;   Implements , 
+;   Implements ,
 ;   ( x -- )
 ;
-;   Reserve one cell of data space and store x in the cell. 
-;   If the data-space pointer is aligned when , begins execution, 
-;   it will remain aligned when , finishes execution. 
-;   An ambiguous condition exists if the data-space pointer is not 
-;   aligned prior to execution of ,. 
+;   Reserve one cell of data space and store x in the cell.
+;   If the data-space pointer is aligned when , begins execution,
+;   it will remain aligned when , finishes execution.
+;   An ambiguous condition exists if the data-space pointer is not
+;   aligned prior to execution of ,.
 
     fenter
-    
+
     pop de
     ld  hl, (_DP)
     ld  (hl), e
@@ -652,7 +652,7 @@ code_comma:
     inc hl
     ld  (_DP), hl
 
-    fret    
+    fret
 
 code_hide:
 ;
@@ -664,10 +664,10 @@ code_hide:
 ;
     fenter
 
-    ld  hl, (_DICT)     ; last entry 
+    ld  hl, (_DICT)     ; last entry
     ld  de, (hl)        ; next entry
-    ld  (_DICT), de     ; 
-   
+    ld  (_DICT), de     ;
+
     fret
 
 code_dict:
@@ -696,7 +696,7 @@ macro mdict_xt xt
 endm
 
 dict_init:
-    ;   
+    ;
     ;   Initialize the dictionary with some Forth words
     ;
     fenter
@@ -718,7 +718,7 @@ dict_init:
 
     mdict_add st_plus_loop,     code_plus_loop_runtime
     mdict_xt xt_plus_loop
-    
+
     mdict_add st_leave,         code_leave_runtime
     mdict_xt xt_leave
 
@@ -728,7 +728,7 @@ dict_init:
     ;   Add visible words
 
     mdict_add st_noop,      code_noop
-    fcall code_immediate    
+    fcall code_immediate
     ld  hl, (_DICT)
     ld  (xt_noop), hl
 
@@ -752,7 +752,7 @@ dict_init:
     mdict_add st_less_number_sign, code_less_number_sign
     mdict_add st_number_sign,   code_number_sign
     mdict_add st_number_sign_greater, code_number_sign_greater
-    mdict_add st_hold,          code_hold   
+    mdict_add st_hold,          code_hold
     mdict_add st_number_sign_s, code_number_sign_s
     mdict_add st_sign,          code_sign
 
@@ -815,7 +815,7 @@ dict_init:
     mdict_add st_drop,      code_drop
     mdict_add st_emit,      code_emit
     mdict_add st_pick,      code_pick
-    
+
     mdict_add st_cr,        code_cr
     mdict_add st_invert,    code_invert
 
@@ -824,13 +824,13 @@ dict_init:
     mdict_add st_depth,     code_depth
 
     mdict_add st_postpone,  code_postpone
-    fcall code_immediate 
+    fcall code_immediate
 
     mdict_add st_abort,     code_abort
     mdict_add st_quit,      code_quit
     mdict_add st_parse,     code_parse
     mdict_add st_does,      code_does
-    
+
 
     mdict_add st_state,     code_state
 
@@ -879,7 +879,7 @@ dict_init:
     mdict_add st_greater_than, code_greater_than
     mdict_add st_equals,    code_equals
     mdict_add st_u_less_than, code_u_less_than
-    mdict_add st_u_greater_than, code_u_greater_than    
+    mdict_add st_u_greater_than, code_u_greater_than
 
     fret
 
@@ -932,7 +932,7 @@ st_two_to_r:    counted_string "2>r"
 st_two_r_from:  counted_string "2r>"
 st_to_cs:       counted_string  ">cs"
 st_cs_from:     counted_string  "cs>"
-st_cs_fetch:    counted_string "cs@"    
+st_cs_fetch:    counted_string "cs@"
 st_s_m_slash_rem: counted_string "sm/rem"
 st_cmove:       counted_string "cmove"
 st_align:       counted_string "align"

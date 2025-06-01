@@ -12,7 +12,7 @@ code_to_r:
 ;    Execution:
 ;   ( x -- ) ( R: -- x )
 ;
-;   Move x to the return stack. 
+;   Move x to the return stack.
 ;
     pop bc
 
@@ -21,9 +21,9 @@ code_to_r:
     dec ix
     ld  (ix), c
 
-    jp  (hl)    
+    jp  (hl)
 
-code_r_from: 
+code_r_from:
 ;
 ;   Implements R>
 ;
@@ -33,7 +33,7 @@ code_r_from:
 ;   Execution:
 ;   ( -- x ) ( R: x -- )
 ;
-;   Move x from the return stack to the data stack. 
+;   Move x from the return stack to the data stack.
 ;
     ld      c, (ix)     ; pop value from return stack
     inc     ix
@@ -54,7 +54,7 @@ code_r_fetch:
 ;   Execution:
 ;   ( -- x ) ( R: x -- x )
 ;
-;   Copy x from the return stack to the data stack. 
+;   Copy x from the return stack to the data stack.
 ;
     ld      c, (ix)     ; pop return address from return stack
     ld      b, (ix + 1)
@@ -82,8 +82,8 @@ code_two_to_r:
 ;   Execution:
 ;   ( x1 x2 -- ) ( R: -- x1 x2 )
 ;
-;   Transfer cell pair x1 x2 to the return stack. 
-;   Semantically equivalent to SWAP >R >R. 
+;   Transfer cell pair x1 x2 to the return stack.
+;   Semantically equivalent to SWAP >R >R.
 ;
 
     pop bc
@@ -99,7 +99,7 @@ code_two_to_r:
     dec ix
     ld  (ix), c
 
-    jp  (hl)    
+    jp  (hl)
 
 code_two_r_from:
 ;
@@ -139,7 +139,7 @@ code_to_cs:
 ;    Execution:
 ;   ( x -- ) ( C: -- x )
 ;
-;   Move x to the control stack. 
+;   Move x to the control stack.
 ;
     fenter
 
@@ -148,7 +148,7 @@ code_to_cs:
 
     fret
 
-code_cs_from: 
+code_cs_from:
 ;
 ;   Implements CS>
 ;
@@ -158,7 +158,7 @@ code_cs_from:
 ;   Execution:
 ;   ( -- x ) ( C: x -- )
 ;
-;   Move x from the control stack to the data stack. 
+;   Move x from the control stack to the data stack.
 ;
     fenter
 
@@ -177,7 +177,7 @@ code_cs_fetch:
 ;   Execution:
 ;   ( -- x ) ( C: x -- x )
 ;
-;   Copy x from the control stack to the data stack. 
+;   Copy x from the control stack to the data stack.
 ;
     fenter
 
@@ -188,8 +188,8 @@ code_cs_fetch:
     fret
 
 code_cs_roll:
-;    
-;   Implements CS-ROLL 
+;
+;   Implements CS-ROLL
 ;
 ;   Interpretation:
 ;   Interpretation semantics for this word are undefined.
@@ -197,15 +197,15 @@ code_cs_roll:
 ;   Execution:
 ;   ( C: origu | destu origu-1 | destu-1 ... orig0 | dest0 -- origu-1 | destu-1 ... orig0 | dest0 origu | destu ) ( S: u -- )
 ;
-;   Remove u. 
-;   Rotate u+1 elements on top of the control-flow stack so that 
-;   origu | destu is on top of the control-flow stack. 
-;   An ambiguous condition exists if there are less than u+1 items, 
-;   each of which shall be an orig or dest, on the control-flow stack 
+;   Remove u.
+;   Rotate u+1 elements on top of the control-flow stack so that
+;   origu | destu is on top of the control-flow stack.
+;   An ambiguous condition exists if there are less than u+1 items,
+;   each of which shall be an orig or dest, on the control-flow stack
 ;   before CS-ROLL is executed.
 ;
-;   If the control-flow stack is implemented using the data stack, 
-;   u shall be the topmost item on the data stack. 
+;   If the control-flow stack is implemented using the data stack,
+;   u shall be the topmost item on the data stack.
 ;
     fenter
 
@@ -218,7 +218,7 @@ code_cs_roll:
     jr      z, _code_cs_roll_end    ; Nothing to do
 
     ld      hl, bc
-    add     hl, bc      
+    add     hl, bc
     ld      bc, hl  ; bc = u * 2
 
     ;   u != 0
@@ -234,7 +234,7 @@ code_cs_roll:
     ;   Move data block
 
     ld      de, hl  ; de -> destiny
-    dec     hl      ; hl -> origin 
+    dec     hl      ; hl -> origin
     dec     hl
     lddr            ; move
 
@@ -246,7 +246,7 @@ code_cs_roll:
     inc     hl
     ld      (hl), d
 
-_code_cs_roll_end: 
+_code_cs_roll_end:
 
-    fret      
+    fret
 

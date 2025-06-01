@@ -1,19 +1,19 @@
 ;   Zorth - (c) Candid Moe 2024
-;   
+;
 ;   file: file operations
 ;
 
 code_xincluded:
 ;
-;   Implements INCLUDED 
+;   Implements INCLUDED
 ;   ( i * x c-addr u -- j * x )
 ;
-;   Remove c-addr u from the stack. Save the current input source specification, 
-;   including the current value of SOURCE-ID. Open the file specified by c-addr u, 
-;   store the resulting fileid in SOURCE-ID, and make it the input source. 
+;   Remove c-addr u from the stack. Save the current input source specification,
+;   including the current value of SOURCE-ID. Open the file specified by c-addr u,
+;   store the resulting fileid in SOURCE-ID, and make it the input source.
 ;   Store zero in BLK. Other stack effects are due to the words included.
 ;
-;   Repeat until end of file: read a line from the file, fill the input buffer from 
+;   Repeat until end of file: read a line from the file, fill the input buffer from
 ;   the contents of that line, set >IN to zero, and interpret.
 ;
 ;   Text interpretation begins at the start of the file.
@@ -23,13 +23,13 @@ code_xincluded:
 ;
 ;   An ambiguous condition exists if the named file can not be opened, if an I/O
 ;   exception occurs reading the file, or if an I/O exception occurs while closing
-;   the file. When an ambiguous condition exists, the status (open or closed) of 
+;   the file. When an ambiguous condition exists, the status (open or closed) of
 ;   any files that were being interpreted is implementation-defined.
 ;
-;   INCLUDED may allocate memory in data space before it starts interpreting the file. 
-    
+;   INCLUDED may allocate memory in data space before it starts interpreting the file.
+
     fenter
-    
+
     pop     hl      ; Discard count byte
     pop     bc      ; File name address
     add     hl, bc
@@ -45,10 +45,10 @@ code_xincluded:
     push    hl
     fcall   print_line
     fcall   code_cr
-    jr      _load_fs_end    
+    jr      _load_fs_end
 
 _load_fs_open:
-    
+
     ld      h, O_RDONLY
     OPEN
     ld      (_device_number), a
@@ -67,7 +67,7 @@ _load_fs_block:
     cp      255
     jr      nz,     _load_fs_last
 
-_load_fs_full_block:    
+_load_fs_full_block:
 
     ;   Search the last '\n' and "cut" the buffer there
 
@@ -108,10 +108,10 @@ _load_fs_last:
     CLOSE
 
 _load_fs_end:
-    
+
     fret
 
 
 _device_number: db   0
 _count:         db   0
-_file_buffer:   defs 255    
+_file_buffer:   defs 255

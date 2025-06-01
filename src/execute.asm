@@ -10,8 +10,8 @@ code_execute:
 ;   Implements EXECUTE
 ;   ( i * x xt -- j * x )
 ;
-;   Remove xt from the stack and perform the semantics identified by it. 
-;   Other stack effects are due to the word EXECUTEd. 
+;   Remove xt from the stack and perform the semantics identified by it.
+;   Other stack effects are due to the word EXECUTEd.
 ;
     fenter
 
@@ -26,8 +26,8 @@ code_execute:
     ld (_ex_code_jp + 1), bc
     ld hl, _ex_end
 
-_ex_code_jp:    
-    jp   0          ; dest. will be overwritten 
+_ex_code_jp:
+    jp   0          ; dest. will be overwritten
 
 _ex_colon_cycle:
     ;   Execute a colon word
@@ -59,11 +59,11 @@ _ex_colon_cycle:
     ld (_ex_colon_jp + 1), bc
     ld hl, _ex_colon_next
 
-_ex_colon_jp:    
-    jp   0          ; dest. will be overwritten 
+_ex_colon_jp:
+    jp   0          ; dest. will be overwritten
 
 _ex_colon_execute:
-    
+
     push    bc          ; Pass to EXECUTE   ( -- xt )
     fcall   code_execute
 
@@ -75,7 +75,7 @@ _ex_colon_next:
     jr  _ex_colon_cycle
 
 _ex_cycle_end:
-    
+
     ex_pop
 
 _ex_end:
@@ -84,17 +84,17 @@ _ex_end:
 
 
 _ex_classify:
-    
+
     ;   Classify the xt in HL as code or colon.
     ;   Set Z flag if code, reset is colon
 
     inc hl
     inc hl      ; # words
-    inc hl      ; hl -> flags        
+    inc hl      ; hl -> flags
     ld  a, (hl) ; A = flags
-    
+
     inc hl      ; hl -> name
-    inc hl  
+    inc hl
     inc hl      ; hl -> code/colon
 
     and BIT_COLON   ; Test the CODE/COLON flag
@@ -113,18 +113,18 @@ check_immediate:
     ld      bc, TRUE
 
     pop     de
-    inc     de      
+    inc     de
     inc     de              ; # words
     inc     de              ; flag
-    ld      a, (de) 
-    and     BIT_IMMEDIATE   ; mode immediate    
+    ld      a, (de)
+    and     BIT_IMMEDIATE   ; mode immediate
     jr      nz, check_immediate_end
-    
+
     ld      bc, FALSE
 
 check_immediate_end:
-    
+
     push    bc
     fret
-    
+
 

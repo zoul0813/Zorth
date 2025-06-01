@@ -17,7 +17,7 @@ init:
     ld      (hl), de
 
     fcall   code_page
-    
+
     ld      HL, _BOOT_MSG
     push    HL
     fcall   print_line
@@ -63,7 +63,7 @@ _repl_words:
 
     ld      a, (hl)         ; Count byte
     cp      0
-    jp      z, _repl_return ;   Do we have a word to process?    
+    jp      z, _repl_return ;   Do we have a word to process?
 
     ;   See if we are discarting words
 
@@ -80,7 +80,7 @@ _repl_words:
     ld      a, b
     cp      ';'
     jr      nz, _repl_words ;   Discard word
-    
+
     ld      a, FALSE
     ld      (_DISCARD), a
     jr      _repl_words
@@ -95,7 +95,7 @@ _repl_words_xt:
     pop     hl             ; xt
 
     ld      a, b
-    or      c        
+    or      c
     jr      nz, _repl_word_found
 
     ;   Not a word. Maybe a value?
@@ -105,9 +105,9 @@ _repl_words_xt:
 
     pop     hl      ; Flag
     ld      a, l
-    or      h       ; Failed? 
-    jr      z,      _repl_failed    
-    
+    or      h       ; Failed?
+    jr      z,      _repl_failed
+
     ;   Success, value already in stack
 
     ;
@@ -130,13 +130,13 @@ _repl_word_found:
     ld      a, (_STATE)
     cp      FALSE
     jr      z, _repl_execute
-    
+
     ;   check for immediate words (always be executed)
-    ld      de, hl          ; xt 
-    inc     de      
+    ld      de, hl          ; xt
+    inc     de
     inc     de              ; # words
     inc     de              ; flag
-    ld      a, (de) 
+    ld      a, (de)
     and     BIT_IMMEDIATE   ; mode immediate
     jr      nz, _repl_execute
 
@@ -155,7 +155,7 @@ _repl_execute:
     call    _ex_classify
     jr      nz, _repl_execute_colon
 
-    pop     bc  ; Discard XT 
+    pop     bc  ; Discard XT
 
     ;   Execute a CODE works.
     ;   Call the code directly
@@ -164,14 +164,14 @@ _repl_execute:
     ld (_repl_jp + 1), bc
     ld hl, _repl_end
 
-_repl_jp:    
-    jp   0          ; dest. will be overwritten 
+_repl_jp:
+    jp   0          ; dest. will be overwritten
 
 _repl_execute_colon:
 
-    fcall   code_execute    
+    fcall   code_execute
     jr      _repl_end
-       
+
 _repl_end:
 ;
 ;   After each instruction, check data stack (only underflow for now)
@@ -202,12 +202,12 @@ _repl_failed:
     jr      _repl_end
 
 _repl_return:
-    
+
     ;   Don't return unless we were called
     ld  a, (_repl_depth)
     cp  0
     jp  z, repl
-    
+
     ld  hl, _repl_depth
     dec (hl)
 
@@ -217,10 +217,10 @@ _repl_depth:    db  0
 inner_interpreter:
 
     fenter
-    
+
     ld  hl, _repl_depth
     inc (hl)
-    
+
     fcall   _repl_words ; This call never return.
 
 return:
@@ -236,18 +236,18 @@ return:
 
 code_find:
 ;
-;   Implements FIND 
+;   Implements FIND
 ;   ( c-addr -- c-addr 0 | xt 1 | xt -1 )
 ;
-;   Find the definition named in the counted string at c-addr. 
-;   If the definition is not found, return c-addr and zero. 
-;   If the definition is found, return its execution token xt. 
-;   If the definition is immediate, also return one (1), otherwise 
-;   also return minus-one (-1). 
-;   For a given string, the values returned by FIND while compiling 
-;   may differ from those returned while not compiling. 
+;   Find the definition named in the counted string at c-addr.
+;   If the definition is not found, return c-addr and zero.
+;   If the definition is found, return its execution token xt.
+;   If the definition is immediate, also return one (1), otherwise
+;   also return minus-one (-1).
+;   For a given string, the values returned by FIND while compiling
+;   may differ from those returned while not compiling.
 ;
-    fenter 
+    fenter
 
     ;
     ;   Search the entry in the dictionary
@@ -270,7 +270,7 @@ code_find:
     ld  hl, 0           ; Return code
     push hl
 
-    fret 
+    fret
 
 _code_find_found:
 
@@ -294,7 +294,7 @@ _code_find_end:
 
 code_source_id:
 ;
-;   Implements SOURCE-ID 
+;   Implements SOURCE-ID
 ;   ( -- 0 | -1 )
 ;
 ;   Identifies the input source as follows:
@@ -315,29 +315,29 @@ code_bye:
 
 code_abort:
 ;
-;   Implements ABORT 
+;   Implements ABORT
 ;   ( i * x -- ) ( R: j * x -- )
 ;
 ;   Empty the data stack and perform the function of QUIT, which includes
-;   emptying the return stack, without displaying a message. 
+;   emptying the return stack, without displaying a message.
 ;
         ld      SP, _DATA_STACK
         jr      code_quit
 
-     
+
 code_quit:
 ;
 ;   Implements QUIT
 ;   ( -- ) ( R: i * x -- )
 ;
-;   Empty the return stack, store zero in SOURCE-ID if it is present, 
+;   Empty the return stack, store zero in SOURCE-ID if it is present,
 ;   make the user input device the input source, and enter interpretation state.
 ;   Do not display a message. Repeat the following:
 ;
 ;   Accept a line from the input source into the input buffer, set >IN to zero,
 ;   and interpret.
 ;
-;   Display the implementation-defined system prompt if in interpretation state, 
+;   Display the implementation-defined system prompt if in interpretation state,
 ;   all processing has been completed, and no ambiguous condition exists.
 ;
     ld      IX, _RETURN_STACK
@@ -348,10 +348,10 @@ code_quit:
     ld      (_gtIN), bc
 
     ld      a, FALSE
-    ld      (_STATE), a    
-    
+    ld      (_STATE), a
+
     jp      repl
-    
+
 code_search:
 ;
 ;   Implements SEARCH
@@ -360,7 +360,7 @@ code_search:
 ;   Search char c in the TIB
 ;
     fenter
-    
+
     ld  hl, (gTIB)
     ld  bc, (hl)    ; BC = Len of TIB area
     ld  hl, bc
@@ -370,7 +370,7 @@ code_search:
     ld  bc, hl      ; BC = remaining char is TIB area
 
     ld  hl, (TIB)
-    ld  de, (hl)    
+    ld  de, (hl)
     ex  hl, de      ; HL = pointer to TIB area
     ld  de, bc
 
@@ -419,7 +419,7 @@ _code_search_not_found:
 
 code_c_quote:
 ;
-;   Implements C" 
+;   Implements C"
 ;
 ;   Interpretation:
 ;   Interpretation semantics for this word are undefined.
@@ -433,8 +433,8 @@ code_c_quote:
 ;   Run-time:
 ;   ( -- c-addr )
 ;
-;   Return c-addr, a counted string consisting of the characters ccc. 
-;   A program shall not alter the returned string. 
+;   Return c-addr, a counted string consisting of the characters ccc.
+;   A program shall not alter the returned string.
 ;
     fenter
 
@@ -473,10 +473,10 @@ code_c_quote:
     push    hl
     fcall   code_aligned    ;
     fcall   code_comma        ; address
-    
+
     ;   Move the text
     pop     bc              ; length
-    ld      hl, (_DP)       ; 
+    ld      hl, (_DP)       ;
     ld      (hl), c         ; count length
     inc     hl
     push    hl
@@ -495,7 +495,7 @@ code_c_quote:
 
 code_s_quote:
 ;
-;   Implement S" 
+;   Implement S"
 ;
 ;   Interpretation:
 ;   Interpretation semantics for this word are undefined.
@@ -503,14 +503,14 @@ code_s_quote:
 ;   Compilation:
 ;   ( "ccc<quote>" -- )
 ;
-;   Parse ccc delimited by " (double-quote). 
+;   Parse ccc delimited by " (double-quote).
 ;   Append the run-time semantics given below to the current definition.
 ;
 ;   Run-time:
 ;   ( -- c-addr u )
 ;
-;   Return c-addr and u describing a string consisting of the characters ccc. 
-;   A program shall not alter the returned string. 
+;   Return c-addr and u describing a string consisting of the characters ccc.
+;   A program shall not alter the returned string.
 ;
     fenter
 
@@ -521,10 +521,10 @@ code_s_quote:
     ld      a, (_STATE)
     cp      TRUE
     jp      z, _code_s_quote_comp
-    
+
     ;   Interpretation mode
-    
-    fret 
+
+    fret
 
 _code_s_quote_comp:
 
@@ -584,14 +584,14 @@ code_state:
 ;   Implements STATE
 ;   ( -- a-addr )
 ;
-;   a-addr is the address of a cell containing the compilation-state flag. 
-;   STATE is true when in compilation state, false otherwise. 
-;   The true value in STATE is non-zero, but is otherwise implementation-defined. 
-;   Only the following standard words alter the value in STATE: : 
+;   a-addr is the address of a cell containing the compilation-state flag.
+;   STATE is true when in compilation state, false otherwise.
+;   The true value in STATE is non-zero, but is otherwise implementation-defined.
+;   Only the following standard words alter the value in STATE: :
 ;       (colon), ; (semicolon), ABORT, QUIT, :NONAME, [ (left-bracket), ] (right-bracket).
 ;
 ;   Note:
-;   A program shall not directly alter the contents of STATE. 
+;   A program shall not directly alter the contents of STATE.
 
     ld      bc, _STATE
     push    bc
@@ -608,7 +608,7 @@ code_backslash:
 ;   Execution:
 ;   ( "ccc<eol>" -- )
 ;
-;   Parse and discard the remainder of the parse area. \ is an immediate word. 
+;   Parse and discard the remainder of the parse area. \ is an immediate word.
 ;
 ;   Note: this word search for a '\n' in the input area, so it process correctly
 ;   things like ": 1+ 1 + ; \ sum \n 1- 1 - ;", which have two logical lines.
@@ -621,15 +621,15 @@ code_backslash:
     add     hl, de
 
     ld      a, (hl)
-    cp      '\n'    
+    cp      '\n'
     jr      z, _code_backslash_end
 
     ;   If not '\n', search for it.
     ;   Note: code_parse start searching one char past next one,
     ;   on the assumptions that's a white space (true) and not
-    ;   relevante (false). 
+    ;   relevante (false).
     ;   TODO: correct this mess
-        
+
     ld      hl, '\n'
     push    hl
     fcall   code_parse
@@ -638,11 +638,11 @@ code_backslash:
 
 _code_backslash_end:
 
-    fret 
+    fret
 
 print_error_word_not_found:
-    
-    fenter 
+
+    fenter
 
     ld      hl, err_word_not_found
     push    hl
@@ -651,10 +651,10 @@ print_error_word_not_found:
     ld hl,  _PAD
     push    hl
     fcall   print_line
-    
+
     fret
 
-   
+
 code_type:
 ;
 ;   Implements TYPE
@@ -663,33 +663,33 @@ code_type:
 ;   If u is greater than zero, display the character string
 ;   specified by c-addr and u.
 ;
-;   When passed a character in a character string whose 
-;   character-defining bits have a value between hex 20 and 
-;   7E inclusive, the corresponding standard character, 
-;   specified by 3.1.2.1 Graphic characters, is displayed. 
-;   Because different output devices can respond differently 
+;   When passed a character in a character string whose
+;   character-defining bits have a value between hex 20 and
+;   7E inclusive, the corresponding standard character,
+;   specified by 3.1.2.1 Graphic characters, is displayed.
+;   Because different output devices can respond differently
 ;   to control characters, programs that use control characters
-;   to perform specific functions have an environmental dependency. 
+;   to perform specific functions have an environmental dependency.
 
     fenter
 
     ld  h, DEV_STDOUT
     pop bc
     pop de
-    WRITE()   
-    
+    WRITE()
+
     fret
 
 code_accept:
 ;
-;   ACCEPT 
+;   ACCEPT
 ;   ( c-addr +n1 -- +n2 )
 ;
 ;   Receive a string of at most +n1 characters. An ambiguous condition exists
-;   if +n1 is zero or greater than 32,767. 
-;   Display graphic characters as they are received. A program that depends on 
-;   the presence or absence of non-graphic characters in the string has an 
-;   environmental dependency. 
+;   if +n1 is zero or greater than 32,767.
+;   Display graphic characters as they are received. A program that depends on
+;   the presence or absence of non-graphic characters in the string has an
+;   environmental dependency.
 ;   The editing functions, if any, that the system performs in order to construct
 ;   the string are implementation-defined.
 ;
@@ -697,7 +697,7 @@ code_accept:
 ;   When input terminates, nothing is appended to the string, and the display is
 ;   maintained in an implementation-defined way.
 ;
-;   +n2 is the length of the string stored at c-addr. 
+;   +n2 is the length of the string stored at c-addr.
 ;
     fenter
 
@@ -705,30 +705,30 @@ code_accept:
     pop bc              ; +n1
     pop de              ; c-addr
     ld  h, DEV_STDIN
-    READ   
-    
+    READ
+
     dec bc              ; Discount the '\n'
     push bc
-    
+
     fret
 
 code_refill:
 ;
 ;   Implement REFILL
-;   ( -- flag ) 
+;   ( -- flag )
 ;
-;   Attempt to fill the input buffer from the input source, 
+;   Attempt to fill the input buffer from the input source,
 ;   returning a true flag if successful.
 ;
-;   When the input source is the user input device, attempt 
-;   to receive input into the terminal input buffer. If successful, 
-;   make the result the input buffer, set >IN to zero, and 
-;   return true. Receipt of a line containing no characters 
-;   is considered successful. If there is no input available from 
+;   When the input source is the user input device, attempt
+;   to receive input into the terminal input buffer. If successful,
+;   make the result the input buffer, set >IN to zero, and
+;   return true. Receipt of a line containing no characters
+;   is considered successful. If there is no input available from
 ;   the current input source, return false.
 ;
-;   When the input source is a string from EVALUATE, return false 
-;   and perform no other action. 
+;   When the input source is a string from EVALUATE, return false
+;   and perform no other action.
 
     fenter
 
@@ -747,9 +747,9 @@ code_refill:
     ld  h,   DEV_STDIN
     ld  de,  (TIB)      ;   Buffer address
     ld  bc,  80         ;   Buffer length
-    READ   
+    READ
 
-    cp  a, ERR_SUCCESS    
+    cp  a, ERR_SUCCESS
     jz  _refill_true
     ld  hl, FALSE
     jp  _refill_ret
@@ -760,42 +760,42 @@ _refill_true:
     ld  hl, (TIB)       ;   replace ending '\n' with space
     add hl, bc
     dec hl
-    
-    ld  a, (hl)     ; B is the last char 
+
+    ld  a, (hl)     ; B is the last char
     cp  '\n'
     jnz _refill_true_next
-    ld  (hl), ' '  
-  
-_refill_true_next:     
+    ld  (hl), ' '
+
+_refill_true_next:
 
     ld  hl, TRUE
 
 _refill_ret:
 
-    push hl    
+    push hl
 
     fret
 
 _refill_bad_source:
-    
+
     ld  hl, err_bad_source
     push hl
     fcall print_line
     fcall code_backslash
     fcall code_cr
-    
+
     ld  hl, FALSE
     push hl
 
     fret
-       
+
 code_pad:
 ;
 ;   Implements PAD
 ;   ( -- c-addr )
 ;
 ;   c-addr is the address of a transient region that can be used
-;   to hold data for intermediate processing. 
+;   to hold data for intermediate processing.
 ;
 
     ld      bc, _PAD
@@ -805,21 +805,21 @@ code_pad:
 
 code_count:
 ;
-;   Implement COUNT 
-;   ( c-addr1 -- c-addr2 u ) 
-;   
+;   Implement COUNT
+;   ( c-addr1 -- c-addr2 u )
+;
 ;   Return the character string specification for the counted
-;   string stored at c-addr1. 
-;   c-addr2 is the address of the first character after c-addr1. 
+;   string stored at c-addr1.
+;   c-addr2 is the address of the first character after c-addr1.
 ;   u is the contents of the character at c-addr1, which is the
-;   length in characters of the string at c-addr2. 
+;   length in characters of the string at c-addr2.
 ;
     fenter
-    
-    pop  hl          ; hl <- counted string address 
+
+    pop  hl          ; hl <- counted string address
     ld   a, (hl)     ; a  <- counted string len
     inc  hl          ; hl -> counted string first char
-    push hl          ; c-addr2 
+    push hl          ; c-addr2
     ld   h, 0        ;
     ld   l, a        ; u
     push hl
@@ -832,7 +832,7 @@ code_space:
 ;   Implement SPACE
 ;   ( -- )
 ;
-;   Display one space. 
+;   Display one space.
 ;
     fenter
 
@@ -844,10 +844,10 @@ code_space:
 
 code_cr:
 ;
-;   Implements CR 
+;   Implements CR
 ;   ( -- )
 ;
-;   Cause subsequent output to appear at the beginning of the next line. 
+;   Cause subsequent output to appear at the beginning of the next line.
 ;
     fenter
 
@@ -864,7 +864,7 @@ print_line:
 ;   Parameters:
 ;   TOS      Address of counted-string.
 ;
-    fenter 
+    fenter
 
     fcall   code_count
     fcall   code_type
@@ -876,16 +876,16 @@ code_emit:
 ;   Implements EMIT
 ;   ( x -- )
 ;
-;   If x is a graphic character in the implementation-defined character set, display x. 
+;   If x is a graphic character in the implementation-defined character set, display x.
 ;   The effect of EMIT for all other values of x is implementation-defined.
 ;
-;   When passed a character whose character-defining bits have a value between 
-;   hex 20 and 7E inclusive, the corresponding standard character, specified 
+;   When passed a character whose character-defining bits have a value between
+;   hex 20 and 7E inclusive, the corresponding standard character, specified
 ;   by 3.1.2.1 Graphic characters, is displayed. Because different output devices
-;   can respond differently to control characters, programs that use control 
-;   characters to perform specific functions have an environmental dependency. 
-;   Each EMIT deals with only one character. 
-    
+;   can respond differently to control characters, programs that use control
+;   characters to perform specific functions have an environmental dependency.
+;   Each EMIT deals with only one character.
+
     fenter
 
     pop de
@@ -895,14 +895,14 @@ code_emit:
     ld  bc, 1
 
     ld  h, DEV_STDOUT
-    WRITE()   
-  
+    WRITE()
+
     fret
 
 _emit_buffer:   db 0
-    
+
 _code_mode_error:
-    
+
     ld  hl, err_mode_not_comp
     push hl
     fcall print_line
@@ -912,7 +912,7 @@ _code_mode_error:
     fcall print_line
     fcall code_backslash
     fcall code_cr
-    
+
     fret
 
 code_ioctl:
@@ -920,7 +920,7 @@ code_ioctl:
 ;   Implements IOCTL
 ;   ( device_number command_number param -- flag )
 ;
-;    
+;
     fenter
 
     pop de
@@ -941,12 +941,12 @@ code_at_xy:
 ;   Implements AT-XY
 ;   ( u1 u2 -- )
 ;
-;   Perform implementation-dependent steps so that the next character 
-;   displayed will appear in column u1, row u2 of the user output device, 
-;   the upper left corner of which is column zero, row zero. 
+;   Perform implementation-dependent steps so that the next character
+;   displayed will appear in column u1, row u2 of the user output device,
+;   the upper left corner of which is column zero, row zero.
 ;
-;   An ambiguous condition exists if the operation cannot be performed on 
-;   the user output device with the specified parameters. 
+;   An ambiguous condition exists if the operation cannot be performed on
+;   the user output device with the specified parameters.
 ;
     fenter
 
@@ -956,20 +956,20 @@ code_at_xy:
 
     ld  c, CMD_SET_CURSOR_XY
     ld  h, DEV_STDOUT
-    
+
     IOCTL
 
     fret
 
 code_page:
 ;
-;   Implements PAGE 
+;   Implements PAGE
 ;   ( -- )
 ;
-;   Move to another page for output. 
-;   Actual function depends on the output device. On a terminal, PAGE 
-;   clears the screen and resets the cursor position to the upper left corner. 
-;   On a printer, PAGE performs a form feed. 
+;   Move to another page for output.
+;   Actual function depends on the output device. On a terminal, PAGE
+;   clears the screen and resets the cursor position to the upper left corner.
+;   On a printer, PAGE performs a form feed.
 ;
     fenter
 
@@ -977,7 +977,7 @@ code_page:
     ld  c, CMD_CLEAR_SCREEN
 
     IOCTL
- 
+
     fret
 
 code_colors:
@@ -993,7 +993,7 @@ code_colors:
     pop de
     pop hl
     ld  d, l
-    
+
     ld  h, DEV_STDOUT
     ld  c, CMD_SET_COLORS
 
@@ -1001,12 +1001,12 @@ code_colors:
 
     fret
 
-error_word_not_found:    
+error_word_not_found:
 
     fenter
 
     fcall   print_error_word_not_found
-   
+
     ;   Discard rest of line and start again
     ld  a, (_STATE)
     cp  TRUE
@@ -1017,7 +1017,7 @@ error_word_not_found:
     jr      _repl_failed_next
 
 _set_discard_mode:
-    ;   
+    ;
     ;   Print the word name that failed
     ;
     ld      hl, err_in_word
@@ -1032,7 +1032,7 @@ _set_discard_mode:
     ld      de, (hl)
     push    de
     fcall   print_line
-    
+
     ld      a, TRUE
     ld      (_DISCARD), a       ; Discard next words until semmicolon is found
     fcall   dict_delete_last

@@ -1,14 +1,14 @@
 ;   Zorth - (c) Candid Moe 2024
-;   
+;
 ;   alu: arithmetic and logic words
 ;
 
 code_false:
 ;
-;   Implements FALSE 
+;   Implements FALSE
 ;   ( -- false )
 ;
-;   Return a false flag. 
+;   Return a false flag.
 
     ld   bc, FALSE
     push bc
@@ -19,7 +19,7 @@ code_true:
 ;   Implements TRUE
 ;   ( -- true )
 ;
-;   Return a true flag, a single-cell value with all bits set. 
+;   Return a true flag, a single-cell value with all bits set.
 
     ld   bc, TRUE
     push bc
@@ -30,7 +30,7 @@ code_drop:
 ;   Implements DROP CORE
 ;   ( x -- )
 ;
-;   Remove x from the stack. 
+;   Remove x from the stack.
 ;
     pop bc
     jp  (hl)
@@ -40,7 +40,7 @@ code_invert:
 ;   Implements INVERT
 ;   ( x1 -- x2 )
 ;
-;   Invert all bits of x1, giving its logical inverse x2. 
+;   Invert all bits of x1, giving its logical inverse x2.
 ;
     pop bc
 
@@ -61,7 +61,7 @@ code_or:
 ;   Implements OR
 ;   ( x1 x2 -- x3 )
 ;
-;   x3 is the bit-by-bit inclusive-or of x1 with x2. 
+;   x3 is the bit-by-bit inclusive-or of x1 with x2.
 
     pop bc
     pop de
@@ -83,7 +83,7 @@ code_xor:
 ;   Implements XOR
 ;   ( x1 x2 -- x3 )
 ;
-;   x3 is the bit-by-bit exclusive-or of x1 with x2. 
+;   x3 is the bit-by-bit exclusive-or of x1 with x2.
 ;
     pop     bc
     pop     de
@@ -100,14 +100,14 @@ code_xor:
 
     jp (hl)
 
-    
+
 code_and:
 ;
 ;   Implements AND
 ;
 ;   ( x1 x2 -- x3 )
 ;
-;   x3 is the bit-by-bit logical "and" of x1 with x2. 
+;   x3 is the bit-by-bit logical "and" of x1 with x2.
 ;
     pop     bc
     pop     de
@@ -129,11 +129,11 @@ code_negate:
 ;   Implements NEGATE
 ;   ( n1 -- n2 )
 ;
-;   Negate n1, giving its arithmetic inverse n2. 
+;   Negate n1, giving its arithmetic inverse n2.
 ;
     ld  bc, hl
 
-    set_carry_0    
+    set_carry_0
     ld  hl, 0
     pop de
     sbc hl, de
@@ -147,7 +147,7 @@ code_plus:
 ;   Implements +
 ;   ( n1 | u1 n2 | u2 -- n3 | u3 )
 ;
-;   Add n2 | u2 to n1 | u1, giving the sum n3 | u3. 
+;   Add n2 | u2 to n1 | u1, giving the sum n3 | u3.
 ;
     ld  bc, hl  ; Save return address
 
@@ -158,7 +158,7 @@ code_plus:
 
     push hl
 
-    ld  hl, bc  ; return 
+    ld  hl, bc  ; return
     jp  (hl)
 
 code_minus:
@@ -185,10 +185,10 @@ code_star:
 ;   Implements *
 ;   ( n1 | u1 n2 | u2 -- n3 | u3 )
 ;
-;   Multiply n1 | u1 by n2 | u2 giving the product n3 | u3. 
+;   Multiply n1 | u1 by n2 | u2 giving the product n3 | u3.
 ;
-    fenter 
-    
+    fenter
+
     pop hl
     pop de
 
@@ -225,15 +225,15 @@ _code_s_to_d_end:
 
 code_m_star:
 ;
-;   Implements M* 
+;   Implements M*
 ;   ( n1 n2 -- d )
 ;
-;   d is the signed product of n1 times n2. 
+;   d is the signed product of n1 times n2.
 ;
     fenter
 
     pop     hl
-    ctrl_push    
+    ctrl_push
     fcall   code_s_to_d
     ctrl_pop
     push    hl
@@ -245,24 +245,24 @@ code_m_star:
     pop     de
     pop     hl
     exx
-    
+
     call l_small_muls_32_32x32
 
     push hl
     push de
 
     fret
-    
+
 code_u_m_star:
 ;
-;   Implements UM* 
+;   Implements UM*
 ;
 ;   ( u1 u2 -- ud )
 ;
-;   Multiply u1 by u2, giving the unsigned double-cell product ud. 
-;   All values and arithmetic are unsigned. 
+;   Multiply u1 by u2, giving the unsigned double-cell product ud.
+;   All values and arithmetic are unsigned.
 ;
-    fenter 
+    fenter
 
     pop hl
     pop de
@@ -276,13 +276,13 @@ code_u_m_star:
 
 code_s_m_slash_rem:
 ;
-;   Implements SM/REM 
+;   Implements SM/REM
 ;   ( d1 n1 -- n2 n3 )
 ;
 ;   Divide d1 by n1, giving the symmetric quotient n3 and the remainder n2.
-;   Input and output stack arguments are signed. 
-;   An ambiguous condition exists if n1 is zero or if the quotient lies outside 
-;   the range of a single-cell signed integer. 
+;   Input and output stack arguments are signed.
+;   An ambiguous condition exists if n1 is zero or if the quotient lies outside
+;   the range of a single-cell signed integer.
 
     fenter
 
@@ -314,14 +314,14 @@ _code_s_m_slash_rem2:
 
 code_slash_mod:
 ;
-;   Implements /MOD 
+;   Implements /MOD
 ;   ( n1 n2 -- n3 n4 )
 ;
-;   Divide n1 by n2, giving the single-cell remainder n3 and the single-cell quotient n4. 
-;   An ambiguous condition exists if n2 is zero. 
-;   If n1 and n2 differ in sign, the implementation-defined result returned will be the 
-;   same as that returned by either the phrase >R S>D R> FM/MOD or the 
-;   phrase >R S>D R> SM/REM.    
+;   Divide n1 by n2, giving the single-cell remainder n3 and the single-cell quotient n4.
+;   An ambiguous condition exists if n2 is zero.
+;   If n1 and n2 differ in sign, the implementation-defined result returned will be the
+;   same as that returned by either the phrase >R S>D R> FM/MOD or the
+;   phrase >R S>D R> SM/REM.
 ;
 
     fenter
@@ -330,7 +330,7 @@ code_slash_mod:
     pop     hl  ; dividend
 
     call    l_small_divs_16_16x16
-    
+
     push    de  ; remainder
     push    hl  ; quotient
 
@@ -338,11 +338,11 @@ code_slash_mod:
 
 code_ud_slash_mod:
 ;
-;   Implements ud/mod 
+;   Implements ud/mod
 ;   ( ud1 u2 – urem udquot  ) gforth-0.2 “ud/mod”
 ;
 ;   Divide unsigned double ud1 by u2, resulting in a unsigned double
-;   quotient udquot and a single remainder urem. 
+;   quotient udquot and a single remainder urem.
 ;
 
     fenter
@@ -363,7 +363,7 @@ _code_ud_slash_mod2:
 
     call l_small_divu_32_32x32
 
-    exx    
+    exx
     push hl     ; remainder
     exx
     push hl     ; quotient
@@ -377,7 +377,7 @@ code_dup:
 ;   ( x -- x x )
 ;
 ;   Duplicate x.
-;    
+;
     pop  bc
     push bc
     push bc
@@ -389,13 +389,13 @@ code_swap:
 ;   Implements SWAP
 ;   ( x1 x2 -- x2 x1 )
 ;
-;   Exchange the top two stack items. 
+;   Exchange the top two stack items.
 ;
     pop de
     pop bc
     push de
     push bc
-    
+
     jp  (hl)
 
 code_pick:
@@ -403,9 +403,9 @@ code_pick:
 ;   Implements PICK
 ;   ( xu...x1 x0 u -- xu...x1 x0 xu )
 ;
-;   Remove u. Copy the xu to the top of the stack. 
-;   An ambiguous condition exists if there are less than u+2 items 
-;   on the stack before PICK is executed. 
+;   Remove u. Copy the xu to the top of the stack.
+;   An ambiguous condition exists if there are less than u+2 items
+;   on the stack before PICK is executed.
 ;
     fenter
 
@@ -413,7 +413,7 @@ code_pick:
     ld  hl, sp
     add hl, bc
     add hl, bc
-    
+
     ld  bc, (hl)
     push bc
 
@@ -421,17 +421,17 @@ code_pick:
 
 code_rshift:
 ;
-;   Implements RSHIFT 
+;   Implements RSHIFT
 ;   ( x1 u -- x2 )
 ;
-;   Perform a logical right shift of u bit-places on x1, giving x2. 
-;   Put zeroes into the most significant bits vacated by the shift. 
-;   An ambiguous condition exists if u is greater than or equal to the 
-;   number of bits in a cell. 
+;   Perform a logical right shift of u bit-places on x1, giving x2.
+;   Put zeroes into the most significant bits vacated by the shift.
+;   An ambiguous condition exists if u is greater than or equal to the
+;   number of bits in a cell.
 ;
     ld  de, hl  ; save return address
-   
-    pop bc      
+
+    pop bc
     ld  b, c    ; b = how many bits to shift
     pop hl      ; x1
 
@@ -441,8 +441,8 @@ code_rshift:
 
 _code_rshift_cycle:
 
-    srl  h      ;   Shift right high byte by 1, bit0 -> carry    
-    ld  a, l    
+    srl  h      ;   Shift right high byte by 1, bit0 -> carry
+    ld  a, l
     rra         ;   Shift low byte by 1, carry -> bit7
     ld  l, a
 
@@ -459,14 +459,14 @@ code_lshift:
 ;   Implements LSHIFT
 ;   ( x1 u -- x2 )
 ;
-;   Perform a logical left shift of u bit-places on x1, giving x2. 
-;   Put zeroes into the least significant bits vacated by the shift. 
-;   An ambiguous condition exists if u is greater than or equal to 
-;   the number of bits in a cell. 
- 
+;   Perform a logical left shift of u bit-places on x1, giving x2.
+;   Put zeroes into the least significant bits vacated by the shift.
+;   An ambiguous condition exists if u is greater than or equal to
+;   the number of bits in a cell.
+
     ld  de, hl  ; save return address
-   
-    pop bc      
+
+    pop bc
     ld  b, c    ; b = how many bits to shift
     pop hl      ; x1
 
@@ -483,7 +483,7 @@ _code_lshift_cycle:
     ld  a, h    ;   Shift high byte by 1
     rl  a
     ld  h, a
-    
+
     djnz _code_lshift_cycle
 
 _code_lshift_end:
@@ -498,13 +498,13 @@ code_two_slash:
 ;   ( x1 -- x2 )
 ;
 ;   x2 is the result of shifting x1 one bit toward the least-significant bit,
-;   leaving the most-significant bit unchanged. 
+;   leaving the most-significant bit unchanged.
 ;
 
     pop     bc
     ld      a, c
     sra     b
-    rra     
+    rra
     ld      c, a
     push    bc
 
@@ -542,13 +542,13 @@ classify_end:
 
 code_less_than:
 ;
-;   Implements < 
+;   Implements <
 ;   ( n1 n2 -- flag )
 ;
-;   flag is true if and only if n1 is less than n2. 
+;   flag is true if and only if n1 is less than n2.
 ;
     fenter
-    
+
     pop de      ; n2
     pop hl      ; n1
     call classify_signs
@@ -577,15 +577,15 @@ _code_less_4:
 
 code_less_than_end:
     push    hl
-    
-    fret  
-    
+
+    fret
+
 code_greater_than:
 ;
-;   Implements > 
+;   Implements >
 ;   ( n1 n2 -- flag )
 ;
-;   flag is true if and only if n1 is greater than n2. 
+;   flag is true if and only if n1 is greater than n2.
 
     fenter
 
@@ -593,13 +593,13 @@ code_greater_than:
     fcall code_less_than
 
     fret
-    
+
 code_equals:
 ;
 ;   Implements =
 ;   ( x1 x2 -- flag )
 ;
-;   flag is true if and only if x1 is bit-for-bit the same as x2. 
+;   flag is true if and only if x1 is bit-for-bit the same as x2.
 ;
     fenter
 
@@ -613,9 +613,9 @@ code_equals:
     ld  hl, TRUE
 
 code_equals_end:
-    
+
     push    hl
-    
+
     fret
 
 code_u_less_than:
@@ -623,7 +623,7 @@ code_u_less_than:
 ;   Implements U< u-less-than
 ;   ( u1 u2 -- flag )
 ;
-;   flag is true if and only if u1 is less than u2. 
+;   flag is true if and only if u1 is less than u2.
 
     fenter
 
@@ -631,7 +631,7 @@ code_u_less_than:
     pop hl
     set_carry_0
     sbc hl, de
-    
+
     jr  z, _code_u_less_false
     jr  nc, _code_u_less_false
     ld  hl, TRUE
@@ -645,11 +645,11 @@ _code_u_less_end:
     fret
 
 code_u_greater_than:
-;   
+;
 ;   Implements U>
 ;   ( u1 u2 -- flag )
 ;
-;   flag is true if and only if u1 is greater than u2. 
+;   flag is true if and only if u1 is greater than u2.
 
     fenter
 
@@ -664,7 +664,7 @@ code_z80_syscall:
 ;   ( hl de bc a -- hl' de' bc' a' )
 ;
     fenter
-    
+
     pop hl
     ld  a, l
     pop bc
@@ -679,12 +679,12 @@ code_z80_syscall:
     ld  b, 0
     ld  c, a
     push bc
-    
+
     fret
 
 code_int2bcd:
 ;
-;   Converts TOS to BCD 
+;   Converts TOS to BCD
 ;   ( u -- x )
 ;
     pop bc
@@ -708,8 +708,8 @@ multiply_by_10:
     fenter
 
     ld    hl, 1
-    push  hl    
-    fcall code_lshift   
+    push  hl
+    fcall code_lshift
     fcall code_dup
     ld    hl, 2         ; TOS is already shifted 1 place
     push  hl
@@ -719,7 +719,7 @@ multiply_by_10:
     fret
 
 is_hex_digit:
-    ;   
+    ;
     ;   Test if A is 0-9, a-f, A-F
     ;   Return 1 in A if true, 0 otherwise
     ;   (use call, not fcall)
@@ -742,12 +742,12 @@ is_digit:
     ;   Return 1 in A if true, 0 otherwise
     ;   (use call, not fcall)
     ;
-    cp '0' 
+    cp '0'
     jr  c, _is_digit_fail
     cp '9' + 1
     jr  c, _is_digit_success
 
-_is_digit_fail:    
+_is_digit_fail:
     ld  a, 0
     ret
 _is_digit_success:

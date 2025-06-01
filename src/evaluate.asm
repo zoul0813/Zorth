@@ -8,12 +8,12 @@ code_evaluate:
 ;   Implements EVALUATE
 ;   ( i * x c-addr u -- j * x )
 ;
-;   Save the current input source specification. 
-;   Store minus-one (-1) in SOURCE-ID if it is present. 
-;   Make the string described by c-addr and u both the input source and input buffer, 
-;   set >IN to zero, and interpret. 
-;   When the parse area is empty, restore the prior input source specification. 
-;   Other stack effects are due to the words EVALUATEd. 
+;   Save the current input source specification.
+;   Store minus-one (-1) in SOURCE-ID if it is present.
+;   Make the string described by c-addr and u both the input source and input buffer,
+;   set >IN to zero, and interpret.
+;   When the parse area is empty, restore the prior input source specification.
+;   Other stack effects are due to the words EVALUATEd.
 ;
     fenter
 
@@ -24,7 +24,7 @@ code_evaluate:
     ld      bc, (_gtIN)
     push    bc
     fcall   code_to_r           ; old >IN to R
-    
+
     ld      bc, (gTIB)
     push    bc
     fcall   code_to_r           ; old gTIB to R

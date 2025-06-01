@@ -48,7 +48,7 @@ macro   dup reg
 endm
 
 ;
-;   Copy DE to (HL), HL = HL + 2 
+;   Copy DE to (HL), HL = HL + 2
 ;   Implements ld (hl), de
 ;
 macro ld_hl_de
@@ -91,14 +91,14 @@ macro ctrl_pop
     pop iy
 endm
 
-;   
-;   ex_push : push HL in the Execution Stack    
+;
+;   ex_push : push HL in the Execution Stack
 ;
 macro ex_push
     dec iy              ; push address into execution stack
     ld  (iy), h
     dec iy
-    ld  (iy), l    
+    ld  (iy), l
 endm
 
 ;
@@ -119,7 +119,7 @@ start:  db text
 end:
 endm
 
-;   
+;
 ;   Add 1 to the byte at address.
 ;
 macro inc_byte  address
@@ -152,5 +152,5 @@ macro   jump_non_zero reg, dest
     cp  reg
     jr  nz, dest
 endm
-    
+
 

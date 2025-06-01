@@ -8,14 +8,14 @@ code_colon:
 ;   Implements :
 ;   ( C: "<spaces>name" -- colon-sys )
 ;
-;   Skip leading space delimiters. Parse name delimited by a space. 
-;   Create a definition for name, called a "colon definition". 
-;   Enter compilation state and start the current definition, 
-;   producing colon-sys. 
+;   Skip leading space delimiters. Parse name delimited by a space.
+;   Create a definition for name, called a "colon definition".
+;   Enter compilation state and start the current definition,
+;   producing colon-sys.
 ;   Append the initiation semantics given below to the current definition.
 ;
 ;   The execution semantics of name will be determined by the words compiled
-;   into the body of the definition. 
+;   into the body of the definition.
 ;   The current definition shall not be findable in the dictionary until it
 ;   is ended (or until the execution of DOES> in some systems).
 ;
@@ -28,9 +28,9 @@ code_colon:
 ;   name Execution:
 ;   ( i * x -- j * x )
 ;
-;   Execute the definition name. 
-;   The stack effects i * x and j * x represent arguments to and results 
-;   from name, respectively. 
+;   Execute the definition name.
+;   The stack effects i * x and j * x represent arguments to and results
+;   from name, respectively.
 ;
     fenter
 
@@ -38,11 +38,11 @@ code_colon:
 
     fcall   code_create
     jr      z, _colon_end
-    
+
     ld  hl, TRUE
     ld  (_STATE), hl
 
-    ;   Put a marker in the control stack   
+    ;   Put a marker in the control stack
     ld      hl, colon_sys
     ctrl_push
 
@@ -77,9 +77,9 @@ code_semmicolon:
 ;   Compilation:
 ;   ( C: colon-sys -- )
 ;
-;   Append the run-time semantics below to the current definition. 
-;   End the current definition, allow it to be found in the dictionary 
-;   and enter interpretation state, consuming colon-sys. 
+;   Append the run-time semantics below to the current definition.
+;   End the current definition, allow it to be found in the dictionary
+;   and enter interpretation state, consuming colon-sys.
 ;   If the data-space pointer is not aligned, reserve enough data space to align it.
 ;
 ;   Run-time:
@@ -101,7 +101,7 @@ code_semmicolon:
     ;   Check the control stack; must have a colon-sys
     ctrl_pop
     ld  de, colon_sys
-    set_carry_0   
+    set_carry_0
     sbc hl, de
 
     jr  nz, _code_unstructed_error
@@ -129,7 +129,7 @@ code_semmicolon:
     rra         ;
     ld  e, a
 
-    ;   Count the cells     
+    ;   Count the cells
 
     pop hl
     ld  (hl), e ; # words
@@ -139,11 +139,11 @@ code_semmicolon:
     ld  hl, 0
     push hl
     fcall   code_comma
-    
+
     fret
 
 _code_unstructed_error:
-        
+
     fcall dict_delete_last
 
     ld  hl, err_unstructed
@@ -154,6 +154,6 @@ _code_unstructed_error:
     push hl
     fcall print_line
     fcall code_backslash
-    
+
     fret
 

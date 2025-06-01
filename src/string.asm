@@ -7,15 +7,15 @@ code_cmove:
 ;   Implements CMOVE
 ;   ( c-addr1 c-addr2 u -- )
 ;
-;   If u is greater than zero, copy u consecutive characters from 
-;   the data space starting at c-addr1 to that starting at c-addr2, 
-;   proceeding character-by-character from lower addresses to 
-;   higher addresses. 
+;   If u is greater than zero, copy u consecutive characters from
+;   the data space starting at c-addr1 to that starting at c-addr2,
+;   proceeding character-by-character from lower addresses to
+;   higher addresses.
 ;
     jp  code_move
 
 code_str_equals:
-;   
+;
 ;   Implements STR=
 ;   ( c-addr1 u1 c-addr2 u2 – flag )
 ;
@@ -34,7 +34,7 @@ code_str_equals:
     cp c        ; u1 == u2 ? Lenght < 256
     jr nz, _code_str_equals_false
 
-_code_str_equals_cycle:    
+_code_str_equals_cycle:
     ; Same length, compare contents
     ; B = count
     ld  a, (de)
@@ -47,7 +47,7 @@ _code_str_equals_cycle:
 _code_str_equals_true:
     ld  hl, TRUE
     jr  _code_str_end
-        
+
 _code_str_equals_false:
     ld  hl, FALSE
 
@@ -56,9 +56,9 @@ _code_str_end:
     fret
 
 code_str_equals_i:
-;   
+;
 ;   Implements STRI=
-;   ( c-addr1 u1 c-addr2 u2 – flag ) 
+;   ( c-addr1 u1 c-addr2 u2 – flag )
 ;
 ;   Compare string for equality (case insensitive)
 ;
@@ -75,7 +75,7 @@ code_str_equals_i:
     cp c        ; u1 == u2 ? Lenght < 256
     jr nz, _code_stri_equals_false
 
-_code_stri_equals_cycle:    
+_code_stri_equals_cycle:
     ; Same length, compare contents
 
     ; C = count
@@ -93,7 +93,7 @@ _code_stri_equals_cycle:
     inc hl
     inc de
     jr  z, _code_stri_equals_cycle
-    
+
 _code_stri_equals_false:
     ld   hl, FALSE
     push hl
@@ -103,7 +103,7 @@ _code_stri_equals_true:
     ld   hl, TRUE
     push hl
     fret
-        
+
 
 to_lower:
 ;
@@ -116,7 +116,7 @@ to_lower:
 
     sub     'A'
     add     'a'
-    
+
 _to_lower_end:
 
     ret

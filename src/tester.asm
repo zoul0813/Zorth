@@ -1,6 +1,6 @@
 ;   Zorth - (c) Candid Moe 2024
 ;
-;   
+;
 ; The tester defines functions that compare the results of a test with a set of expected
 ; results. The syntax for each test starts with "T{" (T-open brace) followed by a code
 ; sequence to test. This is followed by "->", the expected results, and "}T" (close brace-T).
@@ -12,13 +12,13 @@
 ; tests that one plus one indeed equals two.
 ;
 ; The "T{" records the stack depth prior to the test code so that they can be eliminated
-; from the test. 
-; The "->" records the stack depth and moves the entire stack contents to an array. 
-; In the example test, the recorded stack depth is one and the saved array contains 
-; one value, two. 
-; The "}T" compares the current stack depth to the saved stack depth. 
+; from the test.
+; The "->" records the stack depth and moves the entire stack contents to an array.
+; In the example test, the recorded stack depth is one and the saved array contains
+; one value, two.
+; The "}T" compares the current stack depth to the saved stack depth.
 ; If they are equal each value on the stack is removed from the stack and compared to its
-; corresponding value in the array. If the depths are not equal or if the stack comparison 
+; corresponding value in the array. If the depths are not equal or if the stack comparison
 ; fails, an error is reported. For example:
 ;
 ; T{ 1 2 3 SWAP -> 1 3 2 }T
@@ -45,7 +45,7 @@ code_t_open:
     ;   Record original stack pointer
 
     ld  (stack_pointer_origin), sp
-    
+
     ;   Record source start position
     ld      bc, (_gtIN)      ; current position in buffer
     dec     bc
@@ -73,11 +73,11 @@ code_right_arrow:
     add     hl, sp
     ld      (stack_pointer_after), hl   ; SP
     ld      de, hl                      ; DE = SP
-   
+
     ;   Copy data stack
 
     ld      hl, (stack_pointer_origin)
-    set_carry_0    
+    set_carry_0
     sbc     hl, de
     ld      bc, hl      ; length (bytes)
     ld      (stack_depth), hl
@@ -93,7 +93,7 @@ _code_right_arrow_end:
     ;   Restore stack
     ld      sp, (stack_pointer_origin)
 
-    fret        
+    fret
 
 code_t_close:
 ;
@@ -128,7 +128,7 @@ _compare_stacks:
     ld      hl, (stack_pointer_after)
 
 _code_t_close_cycle:
-    
+
     xor     a
     cp      c
     jr      z, _code_restore
@@ -160,7 +160,7 @@ _code_t_close_end:
     ;   Restore stack as before the test
     ld  sp, (stack_pointer_origin)
 
-    fret    
+    fret
 
 _test_print:
 ;
@@ -176,7 +176,7 @@ _test_print:
     ;   Calculate length
 
     set_carry_0
-    ld      hl, (_gtIN)    
+    ld      hl, (_gtIN)
     ld      de, (test_start)
     sbc     hl, de
 
@@ -222,7 +222,7 @@ _test_print_cycle:
     fcall   code_space
 
     jr      _test_print_cycle
-    
+
 _test_print_end:
 
     fcall   code_cr

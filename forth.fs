@@ -3,8 +3,8 @@
 \
 
 : bl #32 ;               \ ( -- 0x20 )
-: char+ 1 + ;            \ ( c-addr1 -- c-addr2 ) 
-: char bl word char+ c@ ; 
+: char+ 1 + ;            \ ( c-addr1 -- c-addr2 )
+: char bl word char+ c@ ;
 : [char] char literal ; immediate
 : ( [char] ) parse drop drop ; immediate
 : .( [char] ) parse type ; immediate
@@ -29,7 +29,7 @@
 0                   CONSTANT 0S
 0 INVERT            CONSTANT 1S
 0S                  CONSTANT <FALSE>
-1S                  CONSTANT <TRUE> 
+1S                  CONSTANT <TRUE>
 1 1 RSHIFT INVERT   CONSTANT MSB
 
 ( Numeric constants )
@@ -42,26 +42,26 @@
 $0 constant TEXT-COLOR-BLACK
 $1 constant TEXT-COLOR-DARK-BLUE
 $2 constant TEXT-COLOR-DARK-GREEN
-$3 constant TEXT-COLOR-DARK-CYAN 
-$4 constant TEXT-COLOR-DARK-RED  
+$3 constant TEXT-COLOR-DARK-CYAN
+$4 constant TEXT-COLOR-DARK-RED
 $5 constant TEXT-COLOR-DARK-MAGENTA
-$6 constant TEXT-COLOR-BROWN       
-$7 constant TEXT-COLOR-LIGHT-GRAY  
-$8 constant TEXT-COLOR-DARK-GRAY   
-$9 constant TEXT-COLOR-BLUE        
-$a constant TEXT-COLOR-GREEN       
-$b constant TEXT-COLOR-CYAN        
-$c constant TEXT-COLOR-RED         
-$d constant TEXT-COLOR-MAGENTA     
-$e constant TEXT-COLOR-YELLOW      
-$f constant TEXT-COLOR-WHITE       
+$6 constant TEXT-COLOR-BROWN
+$7 constant TEXT-COLOR-LIGHT-GRAY
+$8 constant TEXT-COLOR-DARK-GRAY
+$9 constant TEXT-COLOR-BLUE
+$a constant TEXT-COLOR-GREEN
+$b constant TEXT-COLOR-CYAN
+$c constant TEXT-COLOR-RED
+$d constant TEXT-COLOR-MAGENTA
+$e constant TEXT-COLOR-YELLOW
+$f constant TEXT-COLOR-WHITE
 
-.( . ) 
+.( . )
 
 : 1+    1 + ;
 : 1-    1 - ;
-: decimal #10 base ! ; 
-: hex     #16 base ! ; 
+: decimal #10 base ! ;
+: hex     #16 base ! ;
 
 ( Comparations )
 : <>    = invert ;
@@ -70,17 +70,17 @@ $f constant TEXT-COLOR-WHITE
 : 0<    0 < ;
 : 0>    0 > ;
 
-.( . )  
+.( . )
 : over  >r dup r> swap ;    \ ( x1 x2 -- x1 x2 x1 )
 : tuck  swap over ;         \ ( x1 x2 -- x2 x1 x2 )
 : nip   swap drop ;         \ ( x1 x2 -- x2 )
-: rot   >r swap r> swap ;   \ ( x1 x2 x3 -- x2 x3 x1 ) 
-: 2swap rot >r rot r> ;     \ ( x1 x2 x3 x4 -- x3 x4 x1 x2 ) 
+: rot   >r swap r> swap ;   \ ( x1 x2 x3 -- x2 x3 x1 )
+: 2swap rot >r rot r> ;     \ ( x1 x2 x3 x4 -- x3 x4 x1 x2 )
 : 2dup  over over ;
 : 2drop drop drop ;
-: 2r@   r> r> 2dup >r >r swap ;   \ ( -- x1 x2 ) ( R: x1 x2 -- x1 x2 ) 
-: 2@    dup cell+ @ swap @ ;   \ ( a-addr -- x1 x2 ) 
-: 2!    swap over ! cell+ ! ;  \ ( x1 x2 a-addr -- ) 
+: 2r@   r> r> 2dup >r >r swap ;   \ ( -- x1 x2 ) ( R: x1 x2 -- x1 x2 )
+: 2@    dup cell+ @ swap @ ;   \ ( a-addr -- x1 x2 )
+: 2!    swap over ! cell+ ! ;  \ ( x1 x2 a-addr -- )
 : 2over 3 pick 3 pick ;
 
 : ahead
@@ -90,7 +90,7 @@ $f constant TEXT-COLOR-WHITE
 
 : ." postpone s" postpone type ; immediate
 
-: abort" ( "ccc<quote>" -- ) 
+: abort" ( "ccc<quote>" -- )
     postpone jz
     here >cs 0 ,
     postpone ."
@@ -101,32 +101,32 @@ $f constant TEXT-COLOR-WHITE
 : check-compile-mode ( -- )
     state @ invert
     abort" Error. Not valid in interpreter mode. "
-    ; 
+    ;
 
-: if 
-    postpone jz 
+: if
+    postpone jz
     here >cs 0 ,
     ; immediate
 
 : else postpone jmp 0 ,     \ jmp after the 'then' part
         here cs> !          \ patch the if
         here 2 - >cs        \ save the address for the patch
-    ; immediate       
-
-: then here cs> ! 
     ; immediate
 
-.( . )  
+: then here cs> !
+    ; immediate
+
+.( . )
 
 : ?dup  dup 0<> if dup then ;
 : +!    dup >r @ + r> ! ;
 : abs   dup 0< if negate then ;
 : max   2dup < if swap drop else drop then ;
 : min   2dup < if drop else swap drop then ;
-: . ( n -- ) 
+: . ( n -- )
     base @ #10 =
     if
-        dup abs 0 <# #s rot sign #> 
+        dup abs 0 <# #s rot sign #>
     else
         s>d <# #s #>
     then
@@ -137,14 +137,14 @@ $f constant TEXT-COLOR-WHITE
 : /mod  >R S>D R> SM/REM ;
 : mod   /mod drop ;
 : /     /mod swap drop ;
-: */mod >r m* r> sm/rem ; \ ( n1 n2 n3 -- n4 ) 
+: */mod >r m* r> sm/rem ; \ ( n1 n2 n3 -- n4 )
 : */    */mod swap drop ;
 : um/mod ( ud u1 -- u2 u3) ud/mod drop ;
 : fm/mod ( d n -- rem quot )
     DUP >R
     SM/REM
     ( if the remainder is not zero and has a different sign than the divisor )
-    OVER DUP 0<> SWAP 0< R@ 0< XOR AND 
+    OVER DUP 0<> SWAP 0< R@ 0< XOR AND
     IF
         1- SWAP R> + SWAP
     ELSE
@@ -152,7 +152,7 @@ $f constant TEXT-COLOR-WHITE
     THEN
 ;
 
-.( . )  
+.( . )
 
 : c,        here c! 1 allot ; immediate
 : buffer:   create allot ;
@@ -172,11 +172,11 @@ $f constant TEXT-COLOR-WHITE
   dup if swap >r 1- recurse r> swap exit then  drop ;
 : -rot  2 roll 2 roll ;         \ ( w1 w2 w3 – w3 w1 w2 ) gforth
 
-.( . ) 
+.( . )
 
 : >body 10 + ;
-: ' bl word find 0= if ." Error. Word not found: " count type 0 then ; 
-: ['] ( compilation: "name" --; run-time: -- xt ) 
+: ' bl word find 0= if ." Error. Word not found: " count type 0 then ;
+: ['] ( compilation: "name" --; run-time: -- xt )
     ' literal ; immediate
 : defer  ( "name" -- ) create 0 , does> ( ... -- ... ) @ execute ;
 : defer@ ( xt1 -- xt2 ) >body @ ;
@@ -189,21 +189,21 @@ $f constant TEXT-COLOR-WHITE
    THEN ; IMMEDIATE
 : within ( test low high -- flag ) over - rot rot - u> ;
 
-.( . ) 
+.( . )
 
-: forget ( "<spaces>name" -- ) 
+: forget ( "<spaces>name" -- )
     bl word find
     if     @ dict !
     else   ." Not found." cr
     then
     ; immediate
-: marker dict @ create , does> @ dict ! ; 
+: marker dict @ create , does> @ dict ! ;
 : to
-    ' >body 
+    ' >body
     state @ if
         literal postpone !
-    else 
-        ! 
+    else
+        !
     then
     ; immediate
 
@@ -242,9 +242,9 @@ $f constant TEXT-COLOR-WHITE
 : .s ." < " depth . ." > " depth 0 ?do i pick . loop ;
 : spaces ( n -- ) 0 ?do space loop ;
 : .r   ( n1 n2 -- ) >r s>d <# #S #> dup r> swap - spaces type ;
-: fill ( c-addr u char -- )  rot rot 0 ?do 2dup ! 1 + loop ; 
+: fill ( c-addr u char -- )  rot rot 0 ?do 2dup ! 1 + loop ;
 : erase ( c-addr u -- )    0 fill ;
-: blank ( c-addr u -- )   bl fill ; 
+: blank ( c-addr u -- )   bl fill ;
 
 .( . )
 
@@ -267,7 +267,7 @@ $f constant TEXT-COLOR-WHITE
 ; immediate
 
 
-.( . ) 
+.( . )
 
 : case 0  ; IMMEDIATE ( init count of OFs )
 
@@ -298,9 +298,9 @@ $f constant TEXT-COLOR-WHITE
 ; IMMEDIATE
 
 : holds ( addr u -- )
-   BEGIN DUP WHILE 1- 2DUP + C@ HOLD REPEAT 2DROP ; 
+   BEGIN DUP WHILE 1- 2DUP + C@ HOLD REPEAT 2DROP ;
 
-.( . ) 
+.( . )
 
 : 2hex ( print low TOS byte as HH ) base @ >r hex s>d <# # # #> type r> base ! ;
 : 4hex ( print TOS as HHHH ) base @ >r hex s>d <# # # # # #> type r> base ! ;
@@ -320,7 +320,7 @@ synonym s= str=
 
 : allocate ( u -- a-addr ior )
     2 + ( space for ptr ) heap @ swap - ( -- addr )
-    1- aligned dup                      ( -- a-addr a-addr )  
+    1- aligned dup                      ( -- a-addr a-addr )
     here u> if
         dup heap @ swap !   ( write old heap under the block)
         dup heap !
@@ -345,9 +345,9 @@ synonym s= str=
     drop false
     ;
 
-.( . ) 
+.( . )
 
-: asciiz \ Convert text c-addr1 u to asciiz in c-addr2 
+: asciiz \ Convert text c-addr1 u to asciiz in c-addr2
     ( c-addr1 u c-addr2 -- c-addr2 )
     dup    >r
     2dup + >r
@@ -360,27 +360,27 @@ synonym s= str=
    over 4hex ." : " 0 ?do space dup c@ 2hex 1 + loop drop ;
 
 : clearstack ( n ... -- )           \   Delete all items in data stack
-    begin 
-        depth 
-    while 
-        drop 
+    begin
+        depth
+    while
+        drop
     repeat ;
 
 .( . )
 : words
-    dict @ 
+    dict @
     begin
         dup 4 + @ count type space
         @ dup 0=
     until
     drop
-;                
+;
 
-: see     
+: see
     bl word dup ( -- name name )
     find ( -- name xt flag ) 0= if drop count type ."  not found" exit then
     dup 4hex space swap count type
-    2 + ( # of pgma steps ) dup c@ >r 
+    2 + ( # of pgma steps ) dup c@ >r
     1+ ( flags ) dup c@ dup
     1 and if ."  colon" then
     2 and if ."  immediate" then
@@ -393,7 +393,7 @@ synonym s= str=
         4 + @ count #16 min
         type cr
         2 +
-    loop    
+    loop
     drop
 ;
 
@@ -407,17 +407,17 @@ synonym s= str=
 ;
 
 : bcd2int   ( bcd-byte -- u ) \ Convert a BCD byte to integer
-    dup 
+    dup
     $00f0 and 4 rshift 10 * swap
     $000F and +
     ;
 
 : int2bcd   ( u -- bcd-byte )
     #10 /mod swap >r
-    #10 /mod swap 4 lshift r> or  
+    #10 /mod swap 4 lshift r> or
     swap
     #10 /mod swap >r
-    #10 /mod swap 4 lshift r> or  
+    #10 /mod swap 4 lshift r> or
     swap
     drop
     ;
@@ -426,7 +426,7 @@ synonym s= str=
 8 buffer: sys-date
 
 : set-rtc ( +n1 +n2 +n3 +n4 +n5 +n6 -- ior )
-    int2bcd sys-date c!             \ Century              
+    int2bcd sys-date c!             \ Century
             sys-date 1 + c!         \ Decade
     int2bcd drop sys-date 2 + c!    \ Month
     int2bcd drop sys-date 3 + c!    \ Day
@@ -443,12 +443,12 @@ synonym s= str=
     nip nip nip
     decimal
     ;
-    
-: time&date ( -- +n1 +n2 +n3 +n4 +n5 +n6 ) 
+
+: time&date ( -- +n1 +n2 +n3 +n4 +n5 +n6 )
     22 sys-date 0 0  ( HL DE BC A )
     z80-syscall      ( hl' de' bc' a' )
     2drop 2drop
-    sys-date 7 + @ bcd2int    \ seconds 
+    sys-date 7 + @ bcd2int    \ seconds
     sys-date 6 + @ bcd2int    \ minutes
     sys-date 5 + @ bcd2int    \ hour
     sys-date 3 + @ bcd2int    \ day
@@ -465,7 +465,7 @@ synonym s= str=
 
 : sys-error
     ( n -- )    \ Print system error message text
-    case 
+    case
         0 of ." ERR_SUCCESS" endof
         1 of ." ERR_FAILURE" endof
         2 of ." ERR_NOT_IMPLEMENTED" endof
@@ -495,14 +495,14 @@ synonym s= str=
         26 of ." ERR_DIR_NOT_EMPTY" endof
         ." UNKOWN ERROR"
     endcase
-    ;     
+    ;
 
 .( . )
 \ The values for these constant are dictated by Zeal-8 OS
 \ FAM constants. See zos-sys.asm
 
-$000  constant r/o 
-$100  constant w/o 
+$000  constant r/o
+$100  constant w/o
 $200  constant r/w
 $1000 constant o-create
 
@@ -526,43 +526,43 @@ $a line-terminator !
 
 : file-seek ( ud seek fileid -- ud-offset ior )
     8 lshift 6 + swap            ( -- ud file-op seek )
-    >r rot rot r> 
+    >r rot rot r>
     z80-syscall
     3 roll drop
-    ;    
+    ;
 
 : file-size ( fileid -- ud ior )
     8 lshift 4 + in-buf 0 0
     z80-syscall
     >r drop drop drop
-    in-buf @ 
+    in-buf @
     in-buf 2 + @
     r>
     ;
 
 : file-status ( c-addr u -- x ior )
-    namez asciiz 5 swap         
+    namez asciiz 5 swap
     in-buf swap 0
     z80-syscall
     nip nip nip
     ;
 
-: file-position ( fileid -- ud ior ) 
+: file-position ( fileid -- ud ior )
     >r 0 0 SEEK-CUR r>
     file-seek
     ;
-    
-: open-file ( c-addr u fam -- fileid ior ) \ ior = 0 means sucess 
+
+: open-file ( c-addr u fam -- fileid ior ) \ ior = 0 means sucess
             >r namez asciiz r>
-            2 + swap            \ HL = flags + OPEN code            
+            2 + swap            \ HL = flags + OPEN code
             0 swap              \ DE = 0, BC = z-addr
             0                   \ A
             z80-syscall
             nip nip nip
-            dup $80 < if 0 else dup $ff00 + abs then            
+            dup $80 < if 0 else dup $ff00 + abs then
     ;
 
-: close-file ( fileid -- ior ) 
+: close-file ( fileid -- ior )
     8 lshift 3 + 0 0 0
     z80-syscall
     nip nip nip
@@ -575,20 +575,20 @@ $a line-terminator !
     open-file
     ;
 
-: delete-file ( c-addr u -- ior ) 
+: delete-file ( c-addr u -- ior )
     dup 1+ allocate            ( -- c-addr u addr2 ior )
     if drop drop drop -1 exit then
     ( -- c-addr u addr2 )
     2dup + 0 swap !             \ put a '\0' at the end
-    dup >r                      ( -- c-addr u addr2 : R -- addr2 ) 
+    dup >r                      ( -- c-addr u addr2 : R -- addr2 )
     swap move
-    #13 r@ 0 0 
+    #13 r@ 0 0
     z80-syscall
     nip nip nip
     r> free drop
     ;
 
-: read-file ( c-addr u1 fileid -- u2 ior ) 
+: read-file ( c-addr u1 fileid -- u2 ior )
     8 lshift rot rot ( -- fileid c-addr u1 )
     0
     z80-syscall
@@ -596,11 +596,11 @@ $a line-terminator !
     ;
 
 : reposition-file ( ud fileid -- ior )
-    SEEK-SET swap 
+    SEEK-SET swap
     file-seek
     nip nip
     ;
-    
+
 : read-line ( c-addr u1 fileid -- u3 flag ior )
     2>r dup 2r> dup >r  ( -- c-addr c-addr u1 fileid : R -- fileid)
     read-file           ( -- c-addr u2 ior )
@@ -609,25 +609,25 @@ $a line-terminator !
 
     swap over           ( -- u2 c-addr u2 )
     0x0a scan nip       ( -- u2 u3 )
-    ?dup if                    
+    ?dup if
         dup >r - 1+ r>         ( -- u2-u3 u3 )
         1- negate s>d       ( -- u2-u3 ud )
         SEEK-CUR r> file-seek 2drop drop ( -- u2-u3 )
-        true 0       
+        true 0
     else
         2drop 2drop drop rdrop
         0 false -1
     then
     ;
-    
-: write-file ( c-addr u fileid -- ior ) 
+
+: write-file ( c-addr u fileid -- ior )
     8 lshift 1 + ( HL = fileid & write code)
     -rot 0
     z80-syscall
     nip nip nip
     ;
 
-: write-line    ( c-addr u fileid -- ior ) 
+: write-line    ( c-addr u fileid -- ior )
     dup >r
     write-file
     ?dup if
@@ -635,13 +635,13 @@ $a line-terminator !
     else
         line-terminator 1 r>
         write-file
-    then          
+    then
     ;
 
 .( . )
 
 : include-file
-    ( i * x fileid -- j * x ) 
+    ( i * x fileid -- j * x )
 
     255 allocate        ( -- fileid a-addr ior )
     ?dup if
@@ -660,20 +660,20 @@ $a line-terminator !
                 over >r
                 evaluate        ( -- )
                 r>              ( -- a-addr )
-                0                   
+                0
             else
-                drop 
-                1    
+                drop
+                1
             then
         then
-    until        
+    until
     free drop rdrop
     ;
 
-: included 
+: included
     ( i * x c-addr u -- j * x )
     r/o open-file ( -- fileid ior )
-    ?dup if 
+    ?dup if
         ." Error opening file " 2hex drop cr
     else
         dup >r
@@ -682,20 +682,18 @@ $a line-terminator !
     then
     ;
 
-: include ( i*x "name" -- j*x ) 
-    parse-name included  
-    ; 
+: include ( i*x "name" -- j*x )
+    parse-name included
+    ;
 
 cr
 .( Finished ) cr
 
-unused u. .(  bytes free) cr    
+unused u. .(  bytes free) cr
 : test
     decimal clearstack
-    10 20 21 4 11 2024 set-rtc 
+    10 20 21 4 11 2024 set-rtc
     ." time&date "
-    time&date 
+    time&date
     .s cr
-    ;    
-    
-
+    ;

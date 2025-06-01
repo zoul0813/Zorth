@@ -4,16 +4,16 @@
 
 code_key_question:
 ;
-;   Implements KEY? 
+;   Implements KEY?
 ;   ( -- flag )
 ;
-;   If a character is available, return true. Otherwise, return false. 
+;   If a character is available, return true. Otherwise, return false.
 ;   If non-character keyboard events are available before the first valid character,
-;   they are discarded and are subsequently unavailable. 
+;   they are discarded and are subsequently unavailable.
 ;   The character shall be returned by the next execution of KEY.
 ;
-;   After KEY? returns with a value of true, subsequent executions of KEY? prior to 
-;   the execution of KEY or EKEY also return true, without discarding keyboard events. 
+;   After KEY? returns with a value of true, subsequent executions of KEY? prior to
+;   the execution of KEY or EKEY also return true, without discarding keyboard events.
 ;
     fenter
 
@@ -27,7 +27,7 @@ code_key_question:
     call    _key_check
     jr      nz, _code_key_question_end
     ld      bc, FALSE
-    
+
 _code_key_question_end:
     push    bc
     fret
@@ -38,14 +38,14 @@ code_key:
 ;   ( -- char )
 ;
 ;   Receive one character char, a member of the implementation-defined character set.
-;   Keyboard events that do not correspond to such characters are discarded until a 
+;   Keyboard events that do not correspond to such characters are discarded until a
 ;   valid character is received, and those events are subsequently unavailable.
 ;
 ;   All standard characters can be received. Characters received by KEY are not displayed.
 ;
 ;   Any standard character returned by KEY has the numeric value specified in 3.1.2.1
 ;   Graphic characters. Programs that require the ability to receive control characters
-;   have an environmental dependency. 
+;   have an environmental dependency.
 
     fenter
 
@@ -69,7 +69,7 @@ _code_key_copy:
     ld      a, (_editor_keys)
     ld      c, a
     push    bc
-    
+
     fret
 
     ;=========================================================;
@@ -105,7 +105,7 @@ kbd_raw_mode:
 _editor_raw_err_str:
     DEFM "Could not switch input to RAW mode\n"
 _editor_raw_err_str_end:
-    
+
 kbd_cooked_mode:
 
 ; Set STDIN to cooked input
@@ -260,14 +260,14 @@ _controller_print_printable:
     ld      (_editor_read), a
     ret
 
-_controller:        
+_controller:
     ; If caps lock XOR shift is 1, look for the alternate keys
     ld hl, _editor_flags
     ld a, (hl)
     ; If CTRL key is pressed, interpret the key differently
     and FLAGS_CTRL_MASK
     jr nz, _controller_ctrl_combination
-    
+
     ld a, (hl)
     ; Put LSB in D
     ld d, 0

@@ -9,15 +9,15 @@ code_word:
 ;   ( char "<chars>ccc<char>" -- c-addr )
 :
 ;   Skip leading delimiters. Parse characters ccc delimited by char.
-;   An ambiguous condition exists if the length of the parsed 
-;   string is greater than the implementation-defined length of a 
+;   An ambiguous condition exists if the length of the parsed
+;   string is greater than the implementation-defined length of a
 ;   counted string.
 ;
-;   c-addr is the address of a transient region containing the 
+;   c-addr is the address of a transient region containing the
 ;   parsed word as a counted string. If the parse area was empty
-;   or contained no characters other than the delimiter, the 
+;   or contained no characters other than the delimiter, the
 ;   resulting string has a zero length. A program may replace
-;   characters within the string. 
+;   characters within the string.
 
     fenter
 
@@ -49,18 +49,18 @@ code_word:
     ld  (_PAD), a           ; Word length <- 0
 
 _code_word_cycle:
-    ;   Check how many bytes to examine 
+    ;   Check how many bytes to examine
     ld  a, b                   ; remaining == 0?
     or  c
     jz  _code_word_exit
 
     ;   Look at the byte in entry buffer
-    call _read_translate  
+    call _read_translate
 
 _code_word_compare:
     cp  0                   ; The actual value will be written in run-time.
-    jr  nz, _code_word_found    
-       
+    jr  nz, _code_word_found
+
     inc hl                  ; Next char in entry buffer
     dec bc                  ; Decrement count of remaining bytes
 
@@ -71,7 +71,7 @@ _code_word_compare:
     pop bc
 
     jp  _code_word_cycle
-    
+
 _code_word_found:
     ;   Copy one byte to PAD
     ld  (de), a             ; Store byte
@@ -85,9 +85,9 @@ _code_word_found:
     pop bc
 
     inc_byte _PAD           ; Increment word length
-    
-    dec bc                   ; 
-    ld  a, b     
+
+    dec bc                   ;
+    ld  a, b
     or  c                    ; End of entry buffer?
     jz  _code_word_exit
 
@@ -95,12 +95,12 @@ _code_word_found:
 
 _code_word_compare2:
     cp  0                   ; Value will be written in the machine code
-    jr  z, _code_word_exit     
+    jr  z, _code_word_exit
     cp '\n'
     jr  z, _code_word_exit
 
     jr  _code_word_found
-    
+
 _code_word_exit:
     ld  hl, _PAD
     push hl
@@ -138,14 +138,14 @@ code_word_no_clobber:
     ld      b, 0
     ld      c, a    ; string length
     inc     bc
-    
+
     ld      hl, _PAD_NO_CLOBBER
     push    hl      ; destination
     push    bc      ; len
     fcall   code_move
     ld      hl, _PAD_NO_CLOBBER
     push    hl
-    
+
     fret
 
 _PAD_NO_CLOBBER:    db 80
@@ -155,9 +155,9 @@ code_source:
 ;   Implements SOURCE
 ;   ( -- c-addr u )
 ;
-;   c-addr is the address of, and u is the number of characters in, the input buffer. 
+;   c-addr is the address of, and u is the number of characters in, the input buffer.
 ;
-    fenter 
+    fenter
 
     ld      bc, (TIB)
     push    bc
@@ -169,19 +169,19 @@ code_source:
 
 code_parse:
 ;
-;   Implements PARSE 
+;   Implements PARSE
 ;   ( char "ccc<char>" -- c-addr u )
 ;
 ;   Parse ccc delimited by the delimiter char.
 ;
-;   c-addr is the address (within the input buffer) and u is the length of 
-;   the parsed string. 
-;   If the parse area was empty, the resulting string has a zero length. 
+;   c-addr is the address (within the input buffer) and u is the length of
+;   the parsed string.
+;   If the parse area was empty, the resulting string has a zero length.
 ;
     fenter
 
     ld      bc, (_gtIN)     ; >IN
-    ld      hl, (TIB)       
+    ld      hl, (TIB)
     add     hl, bc          ; HL = current position in the input area
     inc     hl              ; skip the white space between words
     inc     bc
@@ -194,13 +194,13 @@ code_parse:
     ld      de, bc          ; >IN
     set_carry_0
     sbc     hl, de
-    ld      bc, hl          ; BC -> chars left    
+    ld      bc, hl          ; BC -> chars left
     jr      z, _code_parse_eol:
-    
+
     pop     hl              ;
     pop     de              ; Char to search for
     ld      a, e
-    push    hl              ; Return the string starting address 
+    push    hl              ; Return the string starting address
 
     cpir
 
@@ -212,12 +212,12 @@ code_parse:
 
     push hl                 ; String len
 
-    ld  de, (_gtIN)          ; 
+    ld  de, (_gtIN)          ;
     add hl, de
     inc hl                  ; One for the skipped char at begining
     inc hl                  ; One for the char found
     ld  (_gtIN), hl          ; Move >IN over the string
-    
+
     fret
 
 _code_parse_eol:
@@ -238,7 +238,7 @@ code_in:
 ;   ( -- a-addr )
 ;
 ;   a-addr is the address of a cell containing the offset in characters from
-;   the start of the input buffer to the start of the parse area. 
+;   the start of the input buffer to the start of the parse area.
 ;
     ld bc, _gtIN
     push bc
@@ -265,7 +265,7 @@ code_scan:
     jr  nz, _code_scan_not_found
 
     dec hl      ;   Make results compatible with scan
-    inc bc 
+    inc bc
 
 _code_scan_not_found:
 
@@ -275,4 +275,4 @@ _code_scan_not_found:
     fret
 
 
-   
+

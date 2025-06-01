@@ -1,5 +1,5 @@
 ;   Zorth - (c) Candid Moe 2024
-;   
+;
 ;   Storage: All the variables, stack and work areas
 ;
 
@@ -15,8 +15,8 @@ defc TRUE  = -1
 defc FALSE = 0
 defc BIT_COLON  = 1
 defc BIT_IMMEDIATE = 2
-defc STACK_SIZE = 128    
-   
+defc STACK_SIZE = 128
+
 line_terminator:    db 0x0a
 
 words:      counted_string "words:\n"
@@ -86,7 +86,7 @@ _S_GUARD:   dw   0x5050
 ; Heap extend up to 0xFFFF
 ;
 _DICT:          dw 0    ; Forth dictionary
-    
+
 _DP:    dw $ + 2
 
         defs 4096

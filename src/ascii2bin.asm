@@ -3,12 +3,12 @@
 ;   ascii2bin: Convert ASCII numeric values to binary
 ;
 ;   Accept numbers, possibly with the following prefix
-;   
+;
 ;    # – decimal
 ;    % – binary
 ;    $ – hexadecimal
 ;    & – decimal (non-standard)
-;    0x – hexadecimal (non-standard). 
+;    0x – hexadecimal (non-standard).
 ;
 ;   Also convert single char 'c' to his ASCII value
 ;
@@ -18,7 +18,7 @@
 code_ascii2bin:
 
     fenter
-    
+
     ld  hl, _PAD
     push hl
     fcall ascii2bin
@@ -32,7 +32,7 @@ _ascii2bin_advance:
     ;   Set Z flag if len == 0
     ;
     inc de
-    dec_byte _ascii2bin_count     
+    dec_byte _ascii2bin_count
     ret
 
 ascii2bin:
@@ -43,27 +43,27 @@ ascii2bin:
 ;
 ;   flag is TRUE is the number is a valid value
 ;
-    fenter 
+    fenter
 
     pop de
     ld  a, (de) ; a = string len
-    ld (_ascii2bin_count), a 
+    ld (_ascii2bin_count), a
     ld  a, 0    ; Initialize to keep track of sign handling
     ld (_ascii2bin_sign), a
 
     inc de
-    
-    ;   Check for a valid prefix. 
+
+    ;   Check for a valid prefix.
     ld  a, (de)
-    cp  '-'     
+    cp  '-'
     jr  nz, _ascii2bin_prefix
-    
+
     ; It start with '-'
 
     ld  a, 1
     ld (_ascii2bin_sign), a     ; remember sign
     call _ascii2bin_advance     ; It can't be only "-"
-    
+
 _ascii2bin_prefix:
     ;
     ;   Use the prefix to set the base
@@ -87,7 +87,7 @@ _ascii2bin_prefix:
     call _ascii2bin_advance
     jr  z, _ascii2bin_int_0      ; It's only "0"
 
-    ld  a, (de)    
+    ld  a, (de)
     cp  'x'
     jr  nz, _ascii2bin_prefix_X
     jr  _ascii2bin_hex_pre
@@ -97,7 +97,7 @@ _ascii2bin_prefix_X:
     jr  nz, _ascii2bin_base
     jr  _ascii2bin_hex_pre
 
-_ascii2bin_base:    
+_ascii2bin_base:
     ;   It's not hex, use BASE
     ld  a, (_BASE)
     cp 2
@@ -108,20 +108,20 @@ _ascii2bin_base:
     jr  z, _ascii2bin_hex
 
     jp  _ascii2bin_error
-    
+
 _ascii2bin_int_pre:
     ;   Number start with a prefix
     call _ascii2bin_advance
     jp  z, _ascii2bin_error ; Error: only prefix
 
 _ascii2bin_int:
-;   
+;
 ;   Convert ASCII integer area to binary
 ;
-    ld      hl, 0   ; hl = result 
+    ld      hl, 0   ; hl = result
 
 _ascii2bin_int_cycle:
-    ;   
+    ;
     ; Convert ASCII digit to binary (subtract ASCII '0')
 
     ld      a, (de) ; Load the next character of the string
@@ -159,14 +159,14 @@ _ascii2bin_hex_pre:
     jp  z, _ascii2bin_error ; Error: only prefix
 
 _ascii2bin_hex:
-;   
+;
 ;   Convert ASCII hexadecimal to binary
 ;   ( -- n )
 ;
 ;   HL: @ counted_string
 ;
 
-    ld      hl, 0   ; hl = result 
+    ld      hl, 0   ; hl = result
 
 _ascii2bin_hex_cycle:
 
@@ -198,7 +198,7 @@ _ascii2bin_hex_sum:
     ld  c, a    ; A contains the binary value
 
     ;   Shift left by 4 bits
-    add hl, hl  
+    add hl, hl
     add hl, hl
     add hl, hl
     add hl, hl
@@ -215,9 +215,9 @@ _ascii2bin_bin_pre:
     jr  z, _ascii2bin_error ; Error: only prefix
 
 _ascii2bin_bin:
-    
-    ld  hl, 0   ; hl = result 
-    
+
+    ld  hl, 0   ; hl = result
+
 _ascii2bin_bin_cycle:
 ;
     ld  bc, 1
@@ -255,12 +255,12 @@ _ascii2bin_char_pre:
 _ascii2bin_char:
 ;
     ld h, 0
-    ld l, (de)    
+    ld l, (de)
 
     push hl
 
     call _ascii2bin_advance
-    
+
     ;   Check for final "'"
     ld a, (de)
     cp '\''
@@ -274,10 +274,10 @@ _ascii2bin_adjust:
     ld      a, (_ascii2bin_sign)
     cp      1
     jr      nz, _ascii2bin_end     ; Check if it's negative
-    
+
     ; Handle two's complement conversion for negative number
     push    hl
-    fcall   code_negate       
+    fcall   code_negate
     pop     hl
 
 _ascii2bin_end:
@@ -292,21 +292,21 @@ _ascii2bin_error:
     ld  hl, FALSE
     push hl
     push hl
-    
-    fret    
+
+    fret
 
 code_base:
 ;
 ;   Implements BASE
 ;   ( -- a-addr )
 ;
-;   a-addr is the address of a cell containing the current 
-;   number-conversion radix {{2...36}}. 
+;   a-addr is the address of a cell containing the current
+;   number-conversion radix {{2...36}}.
 ;
     ld bc, _BASE
     push bc
 
     jp  (hl)
-    
+
 _ascii2bin_sign: db 0
 _ascii2bin_count: db 0
