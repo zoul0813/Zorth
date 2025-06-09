@@ -12,11 +12,11 @@ AS=$(shell which z88dk-z80asm z88dk.z88dk-z80asm | head -1)
 
 all:
 	mkdir -p $(BINDIR)
-	$(AS) -Iinclude -o$(BINDIR)/$(BIN) $(ASMFLAGS) src/zorth.asm
+	$(AS) -Iinclude -O$(BINDIR) -o$(BINDIR)/$(BIN) $(ASMFLAGS) src/zorth.asm
 	cp $(DICT) $(BINDIR)/$(DICT)
 
 run:
-	$(ZEAL_NATIVE_BIN) -H prod -r $(ZEAL_NATIVE_ROM) #-t tf.img -e eeprom.img
+	$(ZEAL_NATIVE_BIN) -H bin -r $(ZEAL_NATIVE_ROM) #-t tf.img -e eeprom.img
 
 clean:
 	rm -r $(BINDIR)

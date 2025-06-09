@@ -1,2 +1,5 @@
 bin/
 *.lis
+*.o
+*.sym
+zeal.ini
